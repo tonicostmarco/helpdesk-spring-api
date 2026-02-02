@@ -3,7 +3,7 @@ package com.helpdeskspringapi.helpdesk.dtos;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UserCreateDTO {
+public class UserInputDTO {
     private Long id;
     private String name;
 
@@ -13,7 +13,7 @@ public class UserCreateDTO {
 
     private Set<RoleDTO> roles = new HashSet<>();
 
-    public UserCreateDTO() {
+    public UserInputDTO() {
     }
 
     public Long getId() {

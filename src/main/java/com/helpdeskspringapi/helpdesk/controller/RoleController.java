@@ -1,8 +1,8 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.UserInputDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserDTO;
-import com.helpdeskspringapi.helpdesk.services.UserService;
+import com.helpdeskspringapi.helpdesk.dtos.RoleDTO;
+
+import com.helpdeskspringapi.helpdesk.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,46 +13,47 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = "/users")
-public class UserController {
+@RequestMapping(value = "/roles")
+public class RoleController {
+
 
     @Autowired
-    private UserService service;
+    private RoleService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable Long id){
+    public ResponseEntity<RoleDTO> findById(@PathVariable Long id){
 
-        UserDTO dto = service.findById(id);
+        RoleDTO dto = service.findById(id);
 
         return ResponseEntity.ok(dto);
 
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable){
+    public ResponseEntity<Page<RoleDTO>> findAll(Pageable pageable){
 
-        Page<UserDTO> dto = service.findAll(pageable);
+        Page<RoleDTO> dto = service.findAll(pageable);
 
         return ResponseEntity.ok(dto);
 
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserInputDTO dto) {
+    public ResponseEntity<RoleDTO> insert(@RequestBody RoleDTO dto) {
 
-        UserDTO userDTo = service.insert(dto);
+        RoleDTO roleDTO = service.insert(dto);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
-                buildAndExpand(userDTo.getId()).toUri();
+                buildAndExpand(roleDTO.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(userDTo);
+        return ResponseEntity.created(uri).body(dto);
 
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserInputDTO dto){
+    public ResponseEntity<RoleDTO> update(@PathVariable Long id, @RequestBody RoleDTO dto){
 
-        UserDTO userDTO = service.update(id, dto);
+        RoleDTO roleDTO = service.update(id, dto);
 
         return ResponseEntity.noContent().build();
 
@@ -66,5 +67,4 @@ public class UserController {
         return ResponseEntity.noContent().build();
 
     }
-
 }
