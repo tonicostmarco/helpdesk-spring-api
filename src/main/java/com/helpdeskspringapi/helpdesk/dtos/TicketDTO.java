@@ -1,47 +1,36 @@
-package com.helpdeskspringapi.helpdesk.entities;
+package com.helpdeskspringapi.helpdesk.dtos;
 
+import com.helpdeskspringapi.helpdesk.entities.Category;
+import com.helpdeskspringapi.helpdesk.entities.Ticket;
+import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority;
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
-import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
-@Entity
-@Table(name = "tb_ticket")
-public class Ticket {
+public class TicketDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
     private String title;
     private String description;
 
-    @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant createdAt;
     private Instant updatedAt;
 
     private TicketPriority priority;
     private TicketStatus status;
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_id")
     private User client;
 
-    @ManyToMany
-    @JoinTable(name = "tb_ticket_category",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "ticket_id"))
-    private Set<Category> categories = new HashSet<>();
+    private Set<CategoryDTO> categories = new HashSet<>();
 
-    public Ticket() {
+    public TicketDTO() {
     }
 
-    public Ticket(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client) {
+    public TicketDTO(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client, Set<Category> categories) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -50,6 +39,23 @@ public class Ticket {
         this.priority = priority;
         this.status = status;
         this.client = client;
+    }
+
+    public TicketDTO(Ticket ticket) {
+        id = ticket.getId();
+        title = ticket.getTitle();
+        description = ticket.getDescription();
+        createdAt = ticket.getCreatedAt();
+        updatedAt = ticket.getUpdatedAt();
+        priority = ticket.getPriority();
+        status = ticket.getStatus();
+        client = ticket.getClient();
+
+        for (Category cat : ticket.getCategories()) {
+
+            categories.add(new CategoryDTO(cat));
+        }
+
     }
 
     public Long getId() {
@@ -116,19 +122,8 @@ public class Ticket {
         this.client = client;
     }
 
-    public Set<Category> getCategories() {
+    public Set<CategoryDTO> getCategories() {
         return categories;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Ticket ticket = (Ticket) o;
-        return Objects.equals(id, ticket.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
 }

@@ -54,7 +54,7 @@ public class UserController {
 
         UserDTO userDTO = service.update(id, dto);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(userDTO);
 
     }
 

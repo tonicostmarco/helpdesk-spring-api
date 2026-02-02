@@ -1,8 +1,7 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.RoleDTO;
-
-import com.helpdeskspringapi.helpdesk.services.RoleService;
+import com.helpdeskspringapi.helpdesk.dtos.CategoryDTO;
+import com.helpdeskspringapi.helpdesk.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,49 +12,48 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
-@RequestMapping(value = "/roles")
-public class RoleController {
-
+@RequestMapping(value = "/categories")
+public class CategoryController {
 
     @Autowired
-    private RoleService service;
+    private CategoryService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<RoleDTO> findById(@PathVariable Long id){
+    public ResponseEntity<CategoryDTO> findById(@PathVariable Long id){
 
-        RoleDTO dto = service.findById(id);
+        CategoryDTO dto = service.findById(id);
 
         return ResponseEntity.ok(dto);
 
     }
 
     @GetMapping
-    public ResponseEntity<Page<RoleDTO>> findAll(Pageable pageable){
+    public ResponseEntity<Page<CategoryDTO>> findAll(Pageable pageable){
 
-        Page<RoleDTO> dto = service.findAll(pageable);
+        Page<CategoryDTO> dto = service.findAll(pageable);
 
         return ResponseEntity.ok(dto);
 
     }
 
     @PostMapping
-    public ResponseEntity<RoleDTO> insert(@RequestBody RoleDTO dto) {
+    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
 
-        RoleDTO roleDTO = service.insert(dto);
+        dto = service.insert(dto);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
-                buildAndExpand(roleDTO.getId()).toUri();
+                buildAndExpand(dto.getId()).toUri();
 
         return ResponseEntity.created(uri).body(dto);
 
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<RoleDTO> update(@PathVariable Long id, @RequestBody RoleDTO dto){
+    public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO dto){
 
-        RoleDTO roleDTO = service.update(id, dto);
+        dto = service.update(id, dto);
 
-        return ResponseEntity.ok(roleDTO);
+        return ResponseEntity.ok(dto);
 
     }
 
@@ -67,4 +65,5 @@ public class RoleController {
         return ResponseEntity.noContent().build();
 
     }
+
 }

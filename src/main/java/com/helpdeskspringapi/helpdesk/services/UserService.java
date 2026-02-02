@@ -35,7 +35,7 @@ public class UserService {
 
         Page<User> users = userRepository.findAll(pageable);
 
-        return users.map(x -> new UserDTO(x));
+        return users.map(UserDTO::new);
 
     }
 

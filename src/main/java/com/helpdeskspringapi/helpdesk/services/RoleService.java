@@ -2,7 +2,6 @@ package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.dtos.RoleDTO;
 import com.helpdeskspringapi.helpdesk.dtos.UserDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
@@ -36,7 +35,7 @@ public class RoleService {
 
         Page<Role> roles = roleRepository.findAll(pageable);
 
-        return roles.map(x -> new RoleDTO(x));
+        return roles.map(RoleDTO::new);
 
     }
 
@@ -44,15 +43,8 @@ public class RoleService {
     public RoleDTO insert(RoleDTO dto) {
 
         Role role = new Role();
-
         copyDtoToEntity(dto, role);
 
-        for (UserDTO userDTO : dto.getUsers()) {
-
-            User user = userRepository.getReferenceById(userDTO.getId());
-           role.getUsers().add(user);
-
-        }
         role = roleRepository.save(role);
 
         return new RoleDTO(role);
