@@ -26,6 +26,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "client")
+    private Set<Ticket> tickets = new HashSet<>();
+
     public User() {
     }
 
