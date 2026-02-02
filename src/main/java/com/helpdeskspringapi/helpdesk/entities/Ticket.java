@@ -1,5 +1,7 @@
 package com.helpdeskspringapi.helpdesk.entities;
 
+import com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority;
+import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -23,6 +25,9 @@ public class Ticket {
     private Instant createdAt;
     private Instant updatedAt;
 
+    private TicketPriority priority;
+    private TicketStatus status;
+
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     private User client;
@@ -36,13 +41,15 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, String title, String description, Instant createdAt, Instant updatedAt, User user) {
+    public Ticket(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.client = user;
+        this.priority = priority;
+        this.status = status;
+        this.client = client;
     }
 
     public Long getId() {
