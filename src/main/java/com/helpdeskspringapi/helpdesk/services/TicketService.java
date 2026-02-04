@@ -46,11 +46,12 @@ public class TicketService {
         Ticket ticket = new Ticket();
         copyDtoToEntity(dto, ticket);
 
-        for (CategoryDTO catDTO : dto.getCategories()) {
+        for (CategoryMinDTO catDTO : dto.getCategories()) {
 
             Category cat = categoryRepository.getReferenceById(catDTO.getId());
             ticket.getCategories().add(cat);
         }
+
         ticket = ticketRepository.save(ticket);
 
         return new TicketDTO(ticket);

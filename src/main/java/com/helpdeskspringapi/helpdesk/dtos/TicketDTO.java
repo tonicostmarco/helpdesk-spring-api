@@ -25,12 +25,12 @@ public class TicketDTO {
 
     private User client;
 
-    private Set<CategoryDTO> categories = new HashSet<>();
+    private Set<CategoryMinDTO> categories = new HashSet<>();
 
     public TicketDTO() {
     }
 
-    public TicketDTO(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client, Set<Category> categories) {
+    public TicketDTO(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client, Set<CategoryMinDTO> categories) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -39,6 +39,7 @@ public class TicketDTO {
         this.priority = priority;
         this.status = status;
         this.client = client;
+        this.categories = categories;
     }
 
     public TicketDTO(Ticket ticket) {
@@ -53,7 +54,7 @@ public class TicketDTO {
 
         for (Category cat : ticket.getCategories()) {
 
-            categories.add(new CategoryDTO(cat));
+            categories.add(new CategoryMinDTO(cat));
         }
 
     }
@@ -122,8 +123,7 @@ public class TicketDTO {
         this.client = client;
     }
 
-    public Set<CategoryDTO> getCategories() {
+    public Set<CategoryMinDTO> getCategories() {
         return categories;
     }
-
 }

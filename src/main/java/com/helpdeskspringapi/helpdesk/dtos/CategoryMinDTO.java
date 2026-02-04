@@ -6,32 +6,19 @@ import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CategoryDTO {
+public class CategoryMinDTO {
 
     private Long id;
     private String name;
 
-    private Set<TicketMinDTO> tickets = new HashSet<>();
-
-    public CategoryDTO() {
-    }
-
-    public CategoryDTO(Long id, String name, Set<TicketMinDTO> tickets) {
-        this.id = id;
+    public CategoryMinDTO(Long id, String name) {
         this.name = name;
-        this.tickets = tickets;
     }
 
-    public CategoryDTO(Category category) {
-        id = category.getId();
+    public CategoryMinDTO(Category category) {
         name = category.getName();
 
-        for (Ticket ticket : category.getCategoryTickets()) {
-            tickets.add(new TicketMinDTO(ticket));
-        }
-
     }
-
 
     public Long getId() {
         return id;
@@ -49,7 +36,4 @@ public class CategoryDTO {
         this.name = name;
     }
 
-    public Set<TicketMinDTO> getCategoryTickets() {
-        return tickets;
-    }
 }

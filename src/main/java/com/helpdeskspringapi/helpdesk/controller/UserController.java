@@ -32,9 +32,9 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserMinDTO>> findByName(@RequestParam String name){
+    public ResponseEntity<Page<UserMinDTO>> findByName(@RequestParam String name, Pageable pageable){
 
-        return ResponseEntity.ok(service.findByName(name));
+        return ResponseEntity.ok(service.findByName(pageable, name));
 
     }
 

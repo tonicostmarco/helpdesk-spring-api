@@ -36,10 +36,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserMinDTO> findByName(String name) {
-        List<User> users = userRepository.findByNameContainingIgnoreCase(name);
+    public Page<UserMinDTO> findByName(Pageable pageable, String name) {
+        Page<User> users = userRepository.findByNameContainingIgnoreCase(pageable, name);
 
-        return users.stream().map(UserMinDTO::new).collect(Collectors.toList());
+        return users.map(UserMinDTO::new);
     }
 
     @Transactional(readOnly = true)

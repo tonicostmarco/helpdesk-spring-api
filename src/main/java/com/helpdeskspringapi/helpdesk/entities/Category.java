@@ -24,8 +24,8 @@ public class Category {
     public Category(Long id, String name, Set<Ticket> categoryTickets) {
         this.id = id;
         this.name = name;
-        this.categoryTickets = categoryTickets;
     }
+
     public Long getId() {
         return id;
     }
