@@ -2,6 +2,8 @@ package com.helpdeskspringapi.helpdesk.controller;
 
 import com.helpdeskspringapi.helpdesk.dtos.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.UserDTO;
+import com.helpdeskspringapi.helpdesk.dtos.UserMinDTO;
+import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -28,12 +31,18 @@ public class UserController {
 
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<UserMinDTO>> findByName(@RequestParam String name){
+
+        return ResponseEntity.ok(service.findByName(name));
+
+    }
+
     @GetMapping
     public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable){
 
-        Page<UserDTO> dto = service.findAll(pageable);
 
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(service.findAll(pageable));
 
     }
 
@@ -42,19 +51,15 @@ public class UserController {
 
         UserDTO userDTo = service.insert(dto);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
-                buildAndExpand(userDTo.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(userDTo);
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
+                buildAndExpand(userDTo.getId()).toUri()).body(userDTo);
 
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserInputDTO dto){
 
-        UserDTO userDTO = service.update(id, dto);
-
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(service.update(id, dto));
 
     }
 
