@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,9 +46,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public Page<UserDTO> findAll(Pageable pageable) {
 
-        Page<User> users = userRepository.findAll(pageable);
+        Page<User> page = userRepository.findAll(pageable);
+        userRepository.findUserWithRoles(page.stream().collect(Collectors.toSet()));
 
-        return users.map(UserDTO::new);
+        return page.map(UserDTO::new);
 
     }
 
