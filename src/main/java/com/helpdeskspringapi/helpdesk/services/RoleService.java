@@ -1,9 +1,7 @@
 package com.helpdeskspringapi.helpdesk.services;
 
-import com.helpdeskspringapi.helpdesk.dtos.RoleDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserDTO;
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
-import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
 import com.helpdeskspringapi.helpdesk.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

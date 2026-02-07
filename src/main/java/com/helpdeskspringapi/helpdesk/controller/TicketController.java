@@ -1,7 +1,7 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.TicketDTO;
-import com.helpdeskspringapi.helpdesk.dtos.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

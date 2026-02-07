@@ -1,9 +1,9 @@
 package com.helpdeskspringapi.helpdesk.services;
 
-import com.helpdeskspringapi.helpdesk.dtos.RoleDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserInputDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service

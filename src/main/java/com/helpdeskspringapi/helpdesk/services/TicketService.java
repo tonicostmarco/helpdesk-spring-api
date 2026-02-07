@@ -1,8 +1,8 @@
 package com.helpdeskspringapi.helpdesk.services;
 
-import com.helpdeskspringapi.helpdesk.dtos.CategoryMinDTO;
-import com.helpdeskspringapi.helpdesk.dtos.TicketDTO;
-import com.helpdeskspringapi.helpdesk.dtos.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;

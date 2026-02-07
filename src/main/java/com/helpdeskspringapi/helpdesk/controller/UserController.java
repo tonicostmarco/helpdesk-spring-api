@@ -1,9 +1,8 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.UserInputDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserDTO;
-import com.helpdeskspringapi.helpdesk.dtos.UserMinDTO;
-import com.helpdeskspringapi.helpdesk.entities.User;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,9 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")

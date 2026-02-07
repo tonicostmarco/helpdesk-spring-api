@@ -1,5 +1,6 @@
-package com.helpdeskspringapi.helpdesk.dtos;
+package com.helpdeskspringapi.helpdesk.dtos.ticket;
 
+import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
 

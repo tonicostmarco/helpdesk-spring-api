@@ -1,4 +1,4 @@
-package com.helpdeskspringapi.helpdesk.dtos;
+package com.helpdeskspringapi.helpdesk.dtos.user;
 
 import com.helpdeskspringapi.helpdesk.entities.User;
 

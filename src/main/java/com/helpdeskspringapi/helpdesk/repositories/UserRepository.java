@@ -1,6 +1,6 @@
 package com.helpdeskspringapi.helpdesk.repositories;
 
-import com.helpdeskspringapi.helpdesk.dtos.UserMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,10 +1,6 @@
-package com.helpdeskspringapi.helpdesk.dtos;
+package com.helpdeskspringapi.helpdesk.dtos.category;
 
 import com.helpdeskspringapi.helpdesk.entities.Category;
-import com.helpdeskspringapi.helpdesk.entities.Ticket;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class CategoryMinDTO {
 

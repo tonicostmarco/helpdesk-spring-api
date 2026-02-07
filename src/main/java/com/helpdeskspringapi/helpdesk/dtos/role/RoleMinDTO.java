@@ -1,10 +1,6 @@
-package com.helpdeskspringapi.helpdesk.dtos;
+package com.helpdeskspringapi.helpdesk.dtos.role;
 
 import com.helpdeskspringapi.helpdesk.entities.Role;
-import com.helpdeskspringapi.helpdesk.entities.User;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class RoleMinDTO {
 

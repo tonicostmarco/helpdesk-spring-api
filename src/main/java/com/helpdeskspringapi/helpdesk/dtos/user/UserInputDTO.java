@@ -1,4 +1,6 @@
-package com.helpdeskspringapi.helpdesk.dtos;
+package com.helpdeskspringapi.helpdesk.dtos.user;
+
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 
 import java.util.HashSet;
 import java.util.Set;

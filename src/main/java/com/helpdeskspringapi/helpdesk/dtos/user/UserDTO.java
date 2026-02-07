@@ -1,5 +1,6 @@
-package com.helpdeskspringapi.helpdesk.dtos;
+package com.helpdeskspringapi.helpdesk.dtos.user;
 
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
 

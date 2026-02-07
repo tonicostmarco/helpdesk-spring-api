@@ -1,6 +1,6 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.CategoryDTO;
+import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
 import com.helpdeskspringapi.helpdesk.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

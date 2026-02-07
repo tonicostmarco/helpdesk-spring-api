@@ -1,15 +1,12 @@
 package com.helpdeskspringapi.helpdesk.repositories;
 
-import com.helpdeskspringapi.helpdesk.dtos.TicketMinDTO;
-import com.helpdeskspringapi.helpdesk.entities.Category;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.Set;
 
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
