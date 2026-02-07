@@ -23,9 +23,9 @@ public class UserController {
     private UserService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable Long id){
+    public ResponseEntity<UserMinDTO> findById(@PathVariable Long id){
 
-        UserDTO dto = service.findById(id);
+        UserMinDTO dto = service.findById(id);
 
         return ResponseEntity.ok(dto);
 
@@ -39,7 +39,7 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable){
+    public ResponseEntity<Page<UserMinDTO>> findAll(Pageable pageable){
 
 
         return ResponseEntity.ok(service.findAll(pageable));

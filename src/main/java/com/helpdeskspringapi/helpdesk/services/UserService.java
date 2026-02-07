@@ -28,28 +28,28 @@ public class UserService {
     private RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
-    public UserDTO findById(Long id) {
+    public UserMinDTO findById(Long id) {
 
         User user = userRepository.findById(id).orElseThrow();
 
-        return new UserDTO(user);
+        return new UserMinDTO(user);
 
     }
 
     @Transactional(readOnly = true)
     public Page<UserMinDTO> findByName(Pageable pageable, String name) {
-        Page<User> users = userRepository.findByNameContainingIgnoreCase(pageable, name);
 
-        return users.map(UserMinDTO::new);
+
+        return userRepository.findByName(pageable, name);
     }
 
     @Transactional(readOnly = true)
-    public Page<UserDTO> findAll(Pageable pageable) {
+    public Page<UserMinDTO> findAll(Pageable pageable) {
 
         Page<User> page = userRepository.findAll(pageable);
         userRepository.findUserWithRoles(page.stream().collect(Collectors.toSet()));
 
-        return page.map(UserDTO::new);
+        return page.map(UserMinDTO::new);
 
     }
 

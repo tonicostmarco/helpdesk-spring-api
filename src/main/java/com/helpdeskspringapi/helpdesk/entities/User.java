@@ -33,10 +33,6 @@ public class User {
     public User() {
     }
 
-    public User(String name) {
-        this.name = name;
-    }
-
     public User(Long id, String name, String phone, String email, String password, Set<Role> roles) {
         this.id = id;
         this.name = name;

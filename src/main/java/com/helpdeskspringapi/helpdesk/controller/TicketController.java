@@ -1,6 +1,7 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
 import com.helpdeskspringapi.helpdesk.dtos.TicketDTO;
+import com.helpdeskspringapi.helpdesk.dtos.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,20 +20,27 @@ public class TicketController {
     private TicketService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<TicketDTO> findById(@PathVariable Long id){
+    public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id){
 
-        TicketDTO dto = service.findById(id);
+        TicketMinDTO dto = service.findById(id);
 
         return ResponseEntity.ok(dto);
 
     }
 
     @GetMapping
-    public ResponseEntity<Page<TicketDTO>> findAll(Pageable pageable){
+    public ResponseEntity<Page<TicketMinDTO>> findAll(Pageable pageable){
 
-        Page<TicketDTO> dto = service.findAll(pageable);
+        Page<TicketMinDTO> dto = service.findAll(pageable);
 
         return ResponseEntity.ok(dto);
+
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @RequestParam String title){
+
+        return ResponseEntity.ok(service.findByTitle(pageable, title));
 
     }
 

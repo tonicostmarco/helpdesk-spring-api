@@ -1,8 +1,9 @@
 package com.helpdeskspringapi.helpdesk.services;
 
-import com.helpdeskspringapi.helpdesk.dtos.*;
+import com.helpdeskspringapi.helpdesk.dtos.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.TicketDTO;
-import com.helpdeskspringapi.helpdesk.entities.*;
+import com.helpdeskspringapi.helpdesk.dtos.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
@@ -23,20 +24,31 @@ public class TicketService {
 
 
     @Transactional(readOnly = true)
-    public TicketDTO findById(Long id) {
+    public TicketMinDTO findById(Long id) {
 
        Ticket ticket = ticketRepository.findById(id).orElseThrow();
 
-        return new TicketDTO(ticket);
+        return new TicketMinDTO(ticket);
 
     }
 
     @Transactional(readOnly = true)
-    public Page<TicketDTO> findAll(Pageable pageable) {
+    public Page<TicketMinDTO> findAll(Pageable pageable) {
 
         Page<Ticket> tickets = ticketRepository.findAll(pageable);
 
-        return tickets.map(TicketDTO::new);
+        return tickets.map(TicketMinDTO::new);
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TicketMinDTO> findByTitle(Pageable pageable, String title) {
+
+        Page<Ticket> tickets = ticketRepository.findAll(pageable);
+
+        ticketRepository.findByTitleContainingIgnoreCase(tickets.getPageable(), title);
+
+        return tickets.map(TicketMinDTO::new);
 
     }
 
