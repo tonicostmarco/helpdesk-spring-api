@@ -6,6 +6,7 @@ import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
 import com.helpdeskspringapi.helpdesk.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {
 
-        User user = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
         return new UserMinDTO(user);
 
@@ -36,7 +37,6 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<UserMinDTO> findByName(Pageable pageable, String name) {
-
 
         return userRepository.findByName(pageable, name);
     }

@@ -3,6 +3,7 @@ package com.helpdeskspringapi.helpdesk.controller;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +21,7 @@ public class TicketController {
     private TicketService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id){
+    public ResponseEntity<TicketMinDTO> findById(@PathVariable @Valid Long id){
 
         TicketMinDTO dto = service.findById(id);
 
@@ -38,14 +39,14 @@ public class TicketController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @RequestParam String title){
+    public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title){
 
         return ResponseEntity.ok(service.findByTitle(pageable, title));
 
     }
 
     @PostMapping
-    public ResponseEntity<TicketDTO> insert(@RequestBody TicketDTO dto) {
+    public ResponseEntity<TicketDTO> insert(@Valid @RequestBody TicketDTO dto) {
 
         dto = service.insert(dto);
 
@@ -57,7 +58,7 @@ public class TicketController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<TicketDTO> update(@PathVariable Long id, @RequestBody TicketDTO dto){
+    public ResponseEntity<TicketDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto){
 
         dto = service.update(id, dto);
 
@@ -66,7 +67,7 @@ public class TicketController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@Valid @PathVariable Long id){
 
         service.delete(id);
 

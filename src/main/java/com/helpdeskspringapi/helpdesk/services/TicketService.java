@@ -5,6 +5,8 @@ import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
+import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
+import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,7 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
 
-       Ticket ticket = ticketRepository.findById(id).orElseThrow();
+       Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
 
         return new TicketMinDTO(ticket);
 
@@ -44,13 +46,17 @@ public class TicketService {
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findByTitle(Pageable pageable, String title) {
 
-        Page<Ticket> tickets = ticketRepository.findAll(pageable);
+        try {
 
-        ticketRepository.findByTitleContainingIgnoreCase(tickets.getPageable(), title);
+           return ticketRepository.findByTitleContainingIgnoreCase(pageable, title);
 
-        return tickets.map(TicketMinDTO::new);
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Ticket title not found");
+        }
+        }
 
-    }
+
+
 
     @Transactional
     public TicketDTO insert(TicketDTO dto) {
@@ -73,19 +79,37 @@ public class TicketService {
     @Transactional
     public TicketDTO update(Long id, TicketDTO dto) {
 
-        Ticket ticket = ticketRepository.getReferenceById(id);
+        try {
 
-        copyDtoToEntity(dto, ticket);
+            Ticket ticket = ticketRepository.getReferenceById(id);
 
-        ticket = ticketRepository.save(ticket);
+            copyDtoToEntity(dto, ticket);
 
-        return new TicketDTO(ticket);
+            ticket = ticketRepository.save(ticket);
+
+            return new TicketDTO(ticket);
+        } catch (ResourceNotFoundException e) {
+            throw new RuntimeException("Ticket ID not found");
+        }
+
 
     }
 
     @Transactional
     public void delete(Long id) {
-        ticketRepository.deleteById(id);
+
+        if (!ticketRepository.existsById(id)) {
+
+            throw new ResourceNotFoundException("Id not found");
+
+        }
+
+        try { ticketRepository.deleteById(id);
+        }
+        catch (DatabaseException e) {
+            throw new DatabaseException("Referential integrity failure");
+        }
+
     }
 
     private void copyDtoToEntity(TicketDTO dto, Ticket ticket) {

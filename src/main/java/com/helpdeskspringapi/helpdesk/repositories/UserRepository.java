@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.UserMinDTO(obj.id, obj.name) " +
+    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO(obj.id, obj.name) " +
             "FROM User obj " +
             "WHERE UPPER(obj.name) LIKE UPPER(CONCAT(:name, '%'))")
     Page<UserMinDTO> findByName(Pageable pageable, String name);
