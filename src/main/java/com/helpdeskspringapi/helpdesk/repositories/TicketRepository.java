@@ -27,9 +27,4 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "ORDER BY obj.createdAt ASC")
     Page<TicketMinDTO> findAllOldestFirst(Pageable pageable);
 
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.createdAt) " +
-            "FROM Ticket obj " +
-            "WHERE UPPER(obj.client.name) = UPPER(:name)")
-    Page<TicketMinDTO> findByClientName(Pageable pageable, @Param("name") String name);
-
 }

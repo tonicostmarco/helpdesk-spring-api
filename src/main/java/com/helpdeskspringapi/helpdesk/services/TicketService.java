@@ -46,17 +46,36 @@ public class TicketService {
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findByTitle(Pageable pageable, String title) {
 
+        if (title.isEmpty())
+
+        throw new RuntimeException("Field must be filled");
+
         try {
 
-           return ticketRepository.findByTitleContainingIgnoreCase(pageable, title);
+            return ticketRepository.findByTitleContainingIgnoreCase(pageable, title);
 
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket title not found");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TicketMinDTO> findByCategory(Pageable pageable, String category) {
+
+        try {
+
+            return ticketRepository.findByCategoryContainingIgnoreCase(pageable, category);
+
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Ticket category not found");
         }
+    }
+    @Transactional(readOnly = true)
+    public Page<TicketMinDTO> findOldestFirst(Pageable pageable) {
 
+             return ticketRepository.findAllOldestFirst(pageable);
 
-
+    }
 
     @Transactional
     public TicketDTO insert(TicketDTO dto) {

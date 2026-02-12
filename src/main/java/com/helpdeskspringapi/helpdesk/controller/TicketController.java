@@ -38,10 +38,24 @@ public class TicketController {
 
     }
 
-    @GetMapping("/search")
+    @GetMapping("/searchtitle")
     public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title){
 
         return ResponseEntity.ok(service.findByTitle(pageable, title));
+
+    }
+
+    @GetMapping("/searchcategory")
+    public ResponseEntity<Page<TicketMinDTO>> findByCategory(Pageable pageable, @Valid @RequestParam String category){
+
+        return ResponseEntity.ok(service.findByCategory(pageable, category));
+
+    }
+
+    @GetMapping("/byoldest")
+    public ResponseEntity<Page<TicketMinDTO>> findOldestFirst(Pageable pageable){
+
+        return ResponseEntity.ok(service.findOldestFirst(pageable));
 
     }
 
