@@ -3,6 +3,7 @@ package com.helpdeskspringapi.helpdesk.controller.handlers;
 import com.helpdeskspringapi.helpdesk.dtos.error.CustomError;
 import com.helpdeskspringapi.helpdesk.dtos.error.ValidationError;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
+import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,18 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(DatabaseException.class)
-    public ResponseEntity<CustomError> resourceNotFound(DatabaseException e, HttpServletRequest request) {
+    public ResponseEntity<CustomError> dataBaseError(DatabaseException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(error);
+
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<CustomError> invalidParameter(InvalidParameterException e, HttpServletRequest request) {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
 

@@ -6,6 +6,7 @@ import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
+import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
@@ -60,12 +61,14 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TicketMinDTO> findByCategory(Pageable pageable, String category) {
+    public List<TicketMinDTO> findByCategory(String category) {
+
+        if (category.isBlank()) {
+            throw new InvalidParameterException("Category required");
+        }
 
         try {
-
-            return ticketRepository.findByCategoryContainingIgnoreCase(pageable, category);
-
+            return ticketRepository.findByCategoryContainingIgnoreCase(category);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket category not found");
         }
@@ -83,6 +86,14 @@ public class TicketService {
         Ticket ticket = new Ticket();
         copyDtoToEntity(dto, ticket);
 
+        Set<Long> dtos = dto.getCategories().stream().map(CategoryMinDTO::getId).collect(Collectors.toSet());
+
+        List<Category> categories = categoryRepository.findAllById(dtos);
+
+        if (categories.size() != dtos.size()) {
+            throw new ResourceNotFoundException("There is 1 or more invalid categories");
+        }
+
         for (CategoryMinDTO catDTO : dto.getCategories()) {
 
             Category cat = categoryRepository.getReferenceById(catDTO.getId());
@@ -98,7 +109,7 @@ public class TicketService {
     @Transactional
     public TicketDTO update(Long id, TicketDTO dto) {
 
-        try {
+             try {
 
             Ticket ticket = ticketRepository.getReferenceById(id);
 
