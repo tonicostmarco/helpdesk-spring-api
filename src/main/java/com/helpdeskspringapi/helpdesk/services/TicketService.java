@@ -16,6 +16,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class TicketService {
 
@@ -29,6 +33,10 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
 
+        if (id == null) {
+            throw new InvalidParameterException("Id required");
+        }
+
        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
 
         return new TicketMinDTO(ticket);
@@ -38,19 +46,16 @@ public class TicketService {
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findAll(Pageable pageable) {
 
-        Page<Ticket> tickets = ticketRepository.findAll(pageable);
-
-        return tickets.map(TicketMinDTO::new);
+        return ticketRepository.findAllWithUsers(pageable);
 
     }
 
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findByTitle(Pageable pageable, String title) {
 
-        if (title.isEmpty())
-
-        throw new RuntimeException("Field must be filled");
-
+        if (title.isBlank()) {
+            throw new InvalidParameterException("Title required");
+        }
         try {
 
             return ticketRepository.findByTitleContainingIgnoreCase(pageable, title);

@@ -11,21 +11,24 @@ public class CategoryDTO {
 
     private Long id;
     private String name;
+    private String description;
 
     private Set<TicketMinDTO> tickets = new HashSet<>();
 
     public CategoryDTO() {
     }
 
-    public CategoryDTO(Long id, String name, Set<TicketMinDTO> tickets) {
+    public CategoryDTO(Long id, String name, String description, Set<TicketMinDTO> tickets) {
         this.id = id;
         this.name = name;
+        this.description = description;
         this.tickets = tickets;
     }
 
     public CategoryDTO(Category category) {
         id = category.getId();
         name = category.getName();
+        description = category.getDescription();
 
         for (Ticket ticket : category.getCategoryTickets()) {
             tickets.add(new TicketMinDTO(ticket));
@@ -48,6 +51,14 @@ public class CategoryDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Set<TicketMinDTO> getCategoryTickets() {

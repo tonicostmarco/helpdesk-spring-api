@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/tickets")
@@ -46,9 +47,9 @@ public class TicketController {
     }
 
     @GetMapping("/searchcategory")
-    public ResponseEntity<Page<TicketMinDTO>> findByCategory(Pageable pageable, @Valid @RequestParam String category){
+    public ResponseEntity<List<TicketMinDTO>> findByCategory(@Valid @RequestParam String category){
 
-        return ResponseEntity.ok(service.findByCategory(pageable, category));
+        return ResponseEntity.ok(service.findByCategory(category));
 
     }
 

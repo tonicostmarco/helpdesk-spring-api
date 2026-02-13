@@ -1,15 +1,18 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -28,9 +31,9 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<UserMinDTO>> findByName(@RequestParam String name, Pageable pageable){
+    public ResponseEntity<Set<UserMinDTO>> findByName(@Valid @RequestParam String name){
 
-        return ResponseEntity.ok(service.findByName(pageable, name));
+        return ResponseEntity.ok(service.findByName(name));
 
     }
 

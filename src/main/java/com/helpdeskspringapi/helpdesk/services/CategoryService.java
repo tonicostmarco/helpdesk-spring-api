@@ -1,14 +1,15 @@
 package com.helpdeskspringapi.helpdesk.services;
 
-import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
+import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -21,37 +22,37 @@ public class CategoryService {
 
 
     @Transactional(readOnly = true)
-    public CategoryDTO findById(Long id) {
+    public CategoryMinDTO findById(Long id) {
 
        Category category = categoryRepository.findById(id).orElseThrow();
 
-        return new CategoryDTO(category);
+        return new CategoryMinDTO(category);
 
     }
 
     @Transactional(readOnly = true)
-    public Page<CategoryDTO> findAll(Pageable pageable) {
+    public List<CategoryMinDTO> findAll() {
 
-        Page<Category> categories = categoryRepository.findAll(pageable);
+        List<Category> categories = categoryRepository.findAll();
 
-        return categories.map(CategoryDTO::new);
+        return categories.stream().map(CategoryMinDTO::new).collect(Collectors.toList());
 
     }
 
     @Transactional
-    public CategoryDTO insert(CategoryDTO dto) {
+    public CategoryMinDTO insert(CategoryMinDTO dto) {
 
         Category Category = new Category();
         copyDtoToEntity(dto, Category);
 
         Category = categoryRepository.save(Category);
 
-        return new CategoryDTO(Category);
+        return new CategoryMinDTO(Category);
 
     }
 
     @Transactional
-    public CategoryDTO update(Long id, CategoryDTO dto) {
+    public CategoryMinDTO update(Long id, CategoryMinDTO dto) {
 
         Category category = categoryRepository.getReferenceById(id);
 
@@ -59,7 +60,7 @@ public class CategoryService {
 
         category = categoryRepository.save(category);
 
-        return new CategoryDTO(category);
+        return new CategoryMinDTO(category);
 
     }
 
@@ -68,10 +69,13 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    private void copyDtoToEntity(CategoryDTO dto, Category category) {
+    private void copyDtoToEntity(CategoryMinDTO dto, Category category) {
         category.setId(dto.getId());
         category.setName(dto.getName());
+        category.setDescription(dto.getDescription());
 
     }
+
+
 
 }

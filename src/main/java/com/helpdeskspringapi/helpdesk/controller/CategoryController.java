@@ -1,15 +1,14 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
+import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/categories")
@@ -19,25 +18,25 @@ public class CategoryController {
     private CategoryService service;
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CategoryDTO> findById(@PathVariable Long id){
+    public ResponseEntity<CategoryMinDTO> findById(@PathVariable Long id){
 
-        CategoryDTO dto = service.findById(id);
+        CategoryMinDTO dto = service.findById(id);
 
         return ResponseEntity.ok(dto);
 
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDTO>> findAll(Pageable pageable){
+    public ResponseEntity<List<CategoryMinDTO>> findAll(){
 
-        Page<CategoryDTO> dto = service.findAll(pageable);
+        List<CategoryMinDTO> dto = service.findAll();
 
         return ResponseEntity.ok(dto);
 
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
+    public ResponseEntity<CategoryMinDTO> insert(@RequestBody CategoryMinDTO dto) {
 
         dto = service.insert(dto);
 
@@ -49,7 +48,7 @@ public class CategoryController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody CategoryDTO dto){
+    public ResponseEntity<CategoryMinDTO> update(@PathVariable Long id, @RequestBody CategoryMinDTO dto){
 
         dto = service.update(id, dto);
 

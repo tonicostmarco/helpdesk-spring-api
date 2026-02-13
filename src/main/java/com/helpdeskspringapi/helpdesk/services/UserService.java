@@ -1,15 +1,15 @@
 package com.helpdeskspringapi.helpdesk.services;
 
-import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
-import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
+import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
 import com.helpdeskspringapi.helpdesk.repositories.UserRepository;
-import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,16 +32,28 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {
 
-        User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+        if (id == null) {
+            throw new InvalidParameterException("Id required");
+        }
 
-        return new UserMinDTO(user);
+              User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+
+            return new UserMinDTO(user);
 
     }
 
     @Transactional(readOnly = true)
-    public Page<UserMinDTO> findByName(Pageable pageable, String name) {
+    public Set<UserMinDTO> findByName(String name) {
 
-        return userRepository.findByName(pageable, name);
+        if (name.isBlank()) {
+            throw new InvalidParameterException("Name required");
+        }
+
+        try {
+            return userRepository.findByName(name);
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Name not found");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -60,34 +72,40 @@ public class UserService {
         User user = new User();
         copyDtoToEntity(dto, user);
 
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new BusinessException("Email already registered");
+        }
 
-       Set<Long> ids = dto.getRoles().stream().map( x -> x.getId()).collect(Collectors.toSet());
+                  Set<Long> ids = dto.getRoles().stream().map(x -> x.getId()).collect(Collectors.toSet());
 
-        List<Role> roles = roleRepository.findAllById(ids);
+            List<Role> roles = roleRepository.findAllById(ids);
 
 
             if (roles.size() != ids.size()) {
                 throw new ResourceNotFoundException("There is 1 or more invalid id.");
             }
 
-        user.getRoles().clear();
-        user.getRoles().addAll(roles);
+            user.getRoles().clear();
+            user.getRoles().addAll(roles);
 
-        user = userRepository.save(user);
-        return new UserDTO(user);
-
+            user = userRepository.save(user);
+            return new UserDTO(user);
     }
 
     @Transactional
     public UserDTO update(Long id, UserInputDTO dto) {
 
-        User user = userRepository.getReferenceById(id);
+        try {
+            User user = userRepository.getReferenceById(id);
 
-        copyDtoToEntity(dto, user);
+            copyDtoToEntity(dto, user);
+            user = userRepository.save(user);
 
-        user = userRepository.save(user);
-
-        return new UserDTO(user);
+            return new UserDTO(user);
+        }
+        catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("User not found");
+        }
 
     }
 
