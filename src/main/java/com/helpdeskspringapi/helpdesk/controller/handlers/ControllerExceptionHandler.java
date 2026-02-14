@@ -8,6 +8,9 @@ import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -45,6 +48,23 @@ public class ControllerExceptionHandler {
 
         CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
 
+        return ResponseEntity.status(status).body(error);
+
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CustomError> argumentNotValid(MethodArgumentNotValidException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        ValidationError error = new ValidationError(Instant.now(), status.value(),"ERROR", request.getRequestURI());
+
+        for (FieldError f : e.getFieldErrors()) {
+            error.addError(f.getField(), f.getDefaultMessage());
+        }
+        for (ObjectError g : e.getBindingResult().getGlobalErrors()) {
+            error.addError("global", g.getDefaultMessage());
+        }
         return ResponseEntity.status(status).body(error);
 
     }

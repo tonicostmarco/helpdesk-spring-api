@@ -46,7 +46,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserInputDTO dto) {
+    public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserInputDTO dto) {
 
         UserDTO userDTo = service.insert(dto);
 
@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserInputDTO dto){
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserInputDTO dto){
 
         return ResponseEntity.ok(service.update(id, dto));
 

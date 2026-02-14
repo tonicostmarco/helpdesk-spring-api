@@ -12,6 +12,10 @@ public class ValidationError extends CustomError{
         super(timestamp, status, error, path);
     }
 
+    public List<FieldMessage> getErrors() {
+        return errors;
+    }
+
     public void addError(String fieldName, String fieldMessage) {
 
         errors.add(new FieldMessage(fieldName, fieldMessage));

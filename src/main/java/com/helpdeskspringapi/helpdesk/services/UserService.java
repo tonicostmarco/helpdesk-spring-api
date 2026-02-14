@@ -6,15 +6,18 @@ import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
+import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
 import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
 import com.helpdeskspringapi.helpdesk.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
 import java.util.Set;
@@ -69,28 +72,28 @@ public class UserService {
     @Transactional
     public UserDTO insert(UserInputDTO dto) {
 
-        User user = new User();
-        copyDtoToEntity(dto, user);
-
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new BusinessException("Email already registered");
         }
-
-                  Set<Long> ids = dto.getRoles().stream().map(x -> x.getId()).collect(Collectors.toSet());
-
+            Set<Long> ids = dto.getRoles().stream().map(x -> x.getId()).collect(Collectors.toSet());
             List<Role> roles = roleRepository.findAllById(ids);
 
-
-            if (roles.size() != ids.size()) {
-                throw new ResourceNotFoundException("There is 1 or more invalid id.");
-            }
+        if (roles.size() != ids.size()) {
+            throw new ResourceNotFoundException("There is 1 or more invalid id.");
+        }
+            User user = new User();
+            copyDtoToEntity(dto, user);
 
             user.getRoles().clear();
             user.getRoles().addAll(roles);
 
             user = userRepository.save(user);
             return new UserDTO(user);
+
     }
+
+
+
 
     @Transactional
     public UserDTO update(Long id, UserInputDTO dto) {
