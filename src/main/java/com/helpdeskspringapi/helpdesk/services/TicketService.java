@@ -40,10 +40,18 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findAll(Pageable pageable) {
+        Page<Ticket> ticket = ticketRepository.findAll(pageable);
+        return ticket.map(TicketMinDTO::new);
+
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TicketMinDTO> findAllWithUsers(Pageable pageable) {
 
         return ticketRepository.findAllWithUsers(pageable);
 
     }
+
 
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findByTitle(Pageable pageable, String title) {

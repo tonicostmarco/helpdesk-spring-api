@@ -1,8 +1,11 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -30,6 +33,15 @@ public class CategoryController {
     public ResponseEntity<List<CategoryMinDTO>> findAll(){
 
         List<CategoryMinDTO> dto = service.findAll();
+
+        return ResponseEntity.ok(dto);
+
+    }
+
+    @GetMapping("/searchtickets")
+    public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets(Pageable pageable){
+
+        List<CategoryMinDTO> dto = service.findAllWithTickets();
 
         return ResponseEntity.ok(dto);
 

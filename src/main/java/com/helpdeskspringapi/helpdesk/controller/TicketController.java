@@ -1,5 +1,6 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
@@ -34,6 +35,15 @@ public class TicketController {
     public ResponseEntity<Page<TicketMinDTO>> findAll(Pageable pageable){
 
         Page<TicketMinDTO> dto = service.findAll(pageable);
+
+        return ResponseEntity.ok(dto);
+
+    }
+
+    @GetMapping("/searchusers")
+    public ResponseEntity<Page<TicketMinDTO>> findAllWithUsers(Pageable pageable){
+
+        Page<TicketMinDTO> dto = service.findAllWithUsers(pageable);
 
         return ResponseEntity.ok(dto);
 

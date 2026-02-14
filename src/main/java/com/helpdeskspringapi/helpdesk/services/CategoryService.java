@@ -43,6 +43,14 @@ public class CategoryService {
 
     }
 
+    public List<CategoryMinDTO> findAllWithTickets() {
+
+        List<Category> categories = categoryRepository.findAll();
+
+        return categoryRepository.findAllWithTickets(categories.stream().collect(Collectors.toList()));
+
+    }
+
     @Transactional
     public CategoryMinDTO insert(CategoryMinDTO dto) {
 

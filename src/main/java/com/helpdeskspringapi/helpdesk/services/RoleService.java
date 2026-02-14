@@ -47,8 +47,7 @@ public class RoleService {
     public List<RoleDTO> findAllWithUsers() {
 
         List<Role> roles = roleRepository.findAll();
-
-           return roleRepository.findAllWithUsers(roles.stream().collect(Collectors.toList()));
+        return roleRepository.findAllWithUsers(roles.stream().collect(Collectors.toList()));
 
     }
 
