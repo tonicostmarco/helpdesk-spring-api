@@ -41,6 +41,15 @@ public class RoleController {
 
     }
 
+    @GetMapping("/searchusers")
+    public ResponseEntity<List<RoleDTO>> findAllWithUsers(){
+
+        List<RoleDTO> dto = service.findAllWithUsers();
+
+        return ResponseEntity.ok(dto);
+
+    }
+
     @PostMapping
     public ResponseEntity<RoleMinDTO> insert(@RequestBody RoleDTO dto) {
 
