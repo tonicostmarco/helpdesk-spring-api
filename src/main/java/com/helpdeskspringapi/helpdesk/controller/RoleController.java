@@ -2,6 +2,7 @@ package com.helpdeskspringapi.helpdesk.controller;
 
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
 import com.helpdeskspringapi.helpdesk.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/roles")
@@ -30,30 +33,30 @@ public class RoleController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<RoleDTO>> findAll(Pageable pageable){
+    public ResponseEntity<List<RoleMinDTO>> findAll(){
 
-        Page<RoleDTO> dto = service.findAll(pageable);
+        List<RoleMinDTO> dto = service.findAll();
 
         return ResponseEntity.ok(dto);
 
     }
 
     @PostMapping
-    public ResponseEntity<RoleDTO> insert(@RequestBody RoleDTO dto) {
+    public ResponseEntity<RoleMinDTO> insert(@RequestBody RoleDTO dto) {
 
-        RoleDTO roleDTO = service.insert(dto);
+        RoleMinDTO roleDTO = service.insert(dto);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
                 buildAndExpand(roleDTO.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(dto);
+        return ResponseEntity.created(uri).body(roleDTO);
 
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<RoleDTO> update(@PathVariable Long id, @RequestBody RoleDTO dto){
+    public ResponseEntity<RoleMinDTO> update(@PathVariable Long id, @RequestBody RoleDTO dto){
 
-        RoleDTO roleDTO = service.update(id, dto);
+        RoleMinDTO roleDTO = service.update(id, dto);
 
         return ResponseEntity.ok(roleDTO);
 
