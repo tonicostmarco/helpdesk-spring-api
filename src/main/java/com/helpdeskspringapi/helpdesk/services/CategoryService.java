@@ -2,9 +2,13 @@ package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
+import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
+import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
+import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +28,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryMinDTO findById(Long id) {
 
-       Category category = categoryRepository.findById(id).orElseThrow();
+       Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found"));
 
         return new CategoryMinDTO(category);
 
@@ -42,6 +46,10 @@ public class CategoryService {
     @Transactional
     public CategoryMinDTO insert(CategoryMinDTO dto) {
 
+        if(categoryRepository.existsByName(dto.getName())) {
+            throw new DatabaseException("Category Already exists");
+        }
+
         Category Category = new Category();
         copyDtoToEntity(dto, Category);
 
@@ -54,19 +62,37 @@ public class CategoryService {
     @Transactional
     public CategoryMinDTO update(Long id, CategoryMinDTO dto) {
 
-        Category category = categoryRepository.getReferenceById(id);
+        if (id == null) {
+            throw new InvalidParameterException("Id required");
+        }
+        try {
+            Category category = categoryRepository.getReferenceById(id);
 
-        copyDtoToEntity(dto, category);
+            copyDtoToEntity(dto, category);
 
-        category = categoryRepository.save(category);
+            category = categoryRepository.save(category);
 
-        return new CategoryMinDTO(category);
+            return new CategoryMinDTO(category);
+        }
+        catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Category not found");
+        }
 
     }
 
     @Transactional
     public void delete(Long id) {
-        categoryRepository.deleteById(id);
+
+        try {
+            categoryRepository.deleteById(id);
+        }
+        catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Category not found");
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Referential integrity failure");
+        }
+
     }
 
     private void copyDtoToEntity(CategoryMinDTO dto, Category category) {

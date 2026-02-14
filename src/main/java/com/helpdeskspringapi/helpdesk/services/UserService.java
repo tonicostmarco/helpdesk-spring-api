@@ -1,5 +1,6 @@
 package com.helpdeskspringapi.helpdesk.services;
 
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
@@ -35,11 +36,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {
 
-        if (id == null) {
-            throw new InvalidParameterException("Id required");
-        }
-
-              User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+                   User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
             return new UserMinDTO(user);
 
@@ -81,11 +78,12 @@ public class UserService {
         if (roles.size() != ids.size()) {
             throw new ResourceNotFoundException("There is 1 or more invalid id.");
         }
-            User user = new User();
-            copyDtoToEntity(dto, user);
 
-            user.getRoles().clear();
-            user.getRoles().addAll(roles);
+        User user = new User();
+        user.getRoles().clear();
+        user.getRoles().addAll(roles);
+
+        copyDtoToEntity(dto, user);
 
             user = userRepository.save(user);
             return new UserDTO(user);
@@ -109,13 +107,26 @@ public class UserService {
         catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("User not found");
         }
+        catch (DataIntegrityViolationException e) {
+            throw new BusinessException("Email already registered");
+        }
 
     }
 
 
     @Transactional
     public void delete(Long id) {
-        userRepository.deleteById(id);
+
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Id not found");
+        }
+
+        try {
+            userRepository.deleteById(id);
+        }
+        catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Referential integrity failure");
+        }
     }
 
 

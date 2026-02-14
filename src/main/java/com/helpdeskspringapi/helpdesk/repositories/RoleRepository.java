@@ -19,5 +19,4 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             "WHERE obj IN :roles")
     List<RoleDTO> findAllWithUsers(List<Role> roles);
 
-
 }

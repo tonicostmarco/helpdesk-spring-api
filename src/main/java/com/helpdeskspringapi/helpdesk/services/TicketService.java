@@ -33,13 +33,8 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
 
-        if (id == null) {
-            throw new InvalidParameterException("Id required");
-        }
-
        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
-
-        return new TicketMinDTO(ticket);
+       return new TicketMinDTO(ticket);
 
     }
 
@@ -88,8 +83,6 @@ public class TicketService {
     @Transactional
     public TicketDTO insert(TicketDTO dto) {
 
-        Ticket ticket = new Ticket();
-        copyDtoToEntity(dto, ticket);
 
         Set<Long> dtos = dto.getCategories().stream().map(CategoryMinDTO::getId).collect(Collectors.toSet());
 
@@ -99,12 +92,10 @@ public class TicketService {
             throw new ResourceNotFoundException("There is 1 or more invalid categories");
         }
 
-        for (CategoryMinDTO catDTO : dto.getCategories()) {
+        Ticket ticket = new Ticket();
+        copyDtoToEntity(dto, ticket);
 
-            Category cat = categoryRepository.getReferenceById(catDTO.getId());
-            ticket.getCategories().add(cat);
-        }
-
+        ticket.getCategories().addAll(categories);
         ticket = ticketRepository.save(ticket);
 
         return new TicketDTO(ticket);
@@ -113,7 +104,6 @@ public class TicketService {
 
     @Transactional
     public TicketDTO update(Long id, TicketDTO dto) {
-
              try {
 
             Ticket ticket = ticketRepository.getReferenceById(id);
@@ -124,7 +114,7 @@ public class TicketService {
 
             return new TicketDTO(ticket);
         } catch (ResourceNotFoundException e) {
-            throw new RuntimeException("Ticket ID not found");
+            throw new ResourceNotFoundException("Ticket ID not found");
         }
 
 
@@ -139,7 +129,8 @@ public class TicketService {
 
         }
 
-        try { ticketRepository.deleteById(id);
+        try {
+            ticketRepository.deleteById(id);
         }
         catch (DatabaseException e) {
             throw new DatabaseException("Referential integrity failure");
