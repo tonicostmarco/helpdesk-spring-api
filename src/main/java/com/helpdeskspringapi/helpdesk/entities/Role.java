@@ -2,6 +2,7 @@ package com.helpdeskspringapi.helpdesk.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tb_role")
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     private Long id;
@@ -20,6 +21,11 @@ public class Role {
     private Set<User> users = new HashSet<>();
 
     public Role() {
+    }
+
+    public Role(Long id, String authority) {
+        this.id = id;
+        this.authority = authority;
     }
 
     public Role(Long id, String authority, Set<User> users) {
