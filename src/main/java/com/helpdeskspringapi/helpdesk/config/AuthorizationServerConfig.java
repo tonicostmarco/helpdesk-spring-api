@@ -63,21 +63,33 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	@Order(2)
-	public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain asSecurityFilterChain(
+			HttpSecurity http,
+			OAuth2AuthorizationService authorizationService,
+			OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
+			PasswordEncoder passwordEncoder
+	) throws Exception {
 
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 
-		// @formatter:off
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-			.tokenEndpoint(tokenEndpoint -> tokenEndpoint
-				.accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())
-				.authenticationProvider(new CustomPasswordAuthenticationProvider(authorizationService(), tokenGenerator(), userDetailsService, passwordEncoder())));
+				.tokenEndpoint(tokenEndpoint -> tokenEndpoint
+						.accessTokenRequestConverter(new CustomPasswordAuthenticationConverter())
+						.authenticationProvider(
+								new CustomPasswordAuthenticationProvider(
+										authorizationService,
+										tokenGenerator,
+										userDetailsService,
+										passwordEncoder
+								)
+						)
+				);
 
-		http.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
-		// @formatter:on
+		http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
 
 		return http.build();
 	}
+
 
 	@Bean
 	public OAuth2AuthorizationService authorizationService() {
