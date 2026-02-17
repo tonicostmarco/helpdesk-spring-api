@@ -1,8 +1,8 @@
 package com.helpdeskspringapi.helpdesk.config;
 
-import com.devsuperior.demo.config.customgrant.CustomPasswordAuthenticationConverter;
-import com.devsuperior.demo.config.customgrant.CustomPasswordAuthenticationProvider;
-import com.devsuperior.demo.config.customgrant.CustomUserAuthorities;
+import com.helpdeskspringapi.helpdesk.config.customgrant.CustomPasswordAuthenticationConverter;
+import com.helpdeskspringapi.helpdesk.config.customgrant.CustomPasswordAuthenticationProvider;
+import com.helpdeskspringapi.helpdesk.config.customgrant.CustomUserAuthorities;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
