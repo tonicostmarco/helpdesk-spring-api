@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -22,6 +23,7 @@ public class TicketController {
     @Autowired
     private TicketService service;
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<TicketMinDTO> findById(@PathVariable @Valid Long id){
 
@@ -31,6 +33,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<TicketMinDTO>> findAll(Pageable pageable){
 
@@ -40,6 +43,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchusers")
     public ResponseEntity<Page<TicketMinDTO>> findAllWithUsers(Pageable pageable){
 
@@ -49,6 +53,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchtitle")
     public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title){
 
@@ -56,6 +61,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchcategory")
     public ResponseEntity<List<TicketMinDTO>> findByCategory(@Valid @RequestParam String category){
 
@@ -63,6 +69,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/byoldest")
     public ResponseEntity<Page<TicketMinDTO>> findOldestFirst(Pageable pageable){
 
@@ -70,6 +77,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_NOC', 'ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<TicketDTO> insert(@Valid @RequestBody TicketDTO dto) {
 
@@ -82,6 +90,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_SUPPORT'), 'ROLE_NOC', 'ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<TicketDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto){
 
@@ -91,6 +100,7 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_SUPPORT'), 'ROLE_NOC', 'ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id){
 
