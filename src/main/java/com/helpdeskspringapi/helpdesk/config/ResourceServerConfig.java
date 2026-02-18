@@ -1,12 +1,14 @@
 package com.helpdeskspringapi.helpdesk.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,29 +35,22 @@ public class ResourceServerConfig {
 	@Order(1)
 	public SecurityFilterChain h2SecurityFilterChain(HttpSecurity http) throws Exception {
 
-		http
-				.securityMatcher("/h2-console/**")
-				.csrf(csrf -> csrf.disable())
-				.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
-				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-
+		http.securityMatcher(PathRequest.toH2Console()).csrf(csrf -> csrf.disable())
+				.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
 		return http.build();
 	}
 
 	@Bean
 	@Order(3)
-	public SecurityFilterChain rsSecurityFilterChain(HttpSecurity http) throws Exception {
-
-		http
-				.csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
-				.oauth2ResourceServer(oauth2 -> oauth2
-						.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
-				)
-				.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-
+	public SecurityFilterChain rsSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+		HttpSecurity http = httpSecurity.securityMatcher("/**");
+		http.csrf(csrf -> csrf.disable());
+		http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
+		http.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()));
+		http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 		return http.build();
 	}
+
 
 	@Bean
 	public JwtAuthenticationConverter jwtAuthenticationConverter() {
@@ -85,10 +80,11 @@ public class ResourceServerConfig {
 	}
 
 	@Bean
-	FilterRegistrationBean<CorsFilter> corsFilter() {
-		FilterRegistrationBean<CorsFilter> bean =
-				new FilterRegistrationBean<>(new CorsFilter(corsConfigurationSource()));
+	FilterRegistrationBean<CorsFilter> filterRegistrationBeanCorsFilter() {
+		FilterRegistrationBean<CorsFilter> bean = new FilterRegistrationBean<>(
+				new CorsFilter(corsConfigurationSource()));
 		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
 		return bean;
 	}
+
 }
