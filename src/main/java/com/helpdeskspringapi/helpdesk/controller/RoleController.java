@@ -50,6 +50,7 @@ public class RoleController {
 
     }
 
+/*
     @PostMapping
     public ResponseEntity<RoleMinDTO> insert(@RequestBody RoleDTO dto) {
 
@@ -61,6 +62,7 @@ public class RoleController {
         return ResponseEntity.created(uri).body(roleDTO);
 
     }
+
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<RoleMinDTO> update(@PathVariable Long id, @RequestBody RoleDTO dto){
@@ -79,4 +81,6 @@ public class RoleController {
         return ResponseEntity.noContent().build();
 
     }
+    */
+
 }

@@ -51,6 +51,10 @@ public class RoleService {
 
     }
 
+    /*
+
+    **LIBERAR E IMPLEMENTAR SE HOUVER DEMANDA**
+
     @Transactional
     public RoleMinDTO insert(RoleDTO dto) {
 
@@ -106,5 +110,7 @@ public class RoleService {
         role.setId(dto.getId());
         role.setAuthority(dto.getAuthority());
       }
+*/
+
 
 }
