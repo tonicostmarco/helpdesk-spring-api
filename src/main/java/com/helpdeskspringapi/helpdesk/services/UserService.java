@@ -9,16 +9,12 @@ import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
 import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
-import com.helpdeskspringapi.helpdesk.projections.UserDetailsProjection;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
 import com.helpdeskspringapi.helpdesk.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
 
     @Autowired
     private UserRepository userRepository;
@@ -140,28 +136,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        List<UserDetailsProjection> users = userRepository.searchUserAndRolesByEmail(username);
-
-        if (users.isEmpty()) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
-        User user = new User();
-
-        user.setEmail(username);
-        user.setPassword(users.getFirst().getPassword());
-
-        for (UserDetailsProjection u : users) {
-            user.addRole(new Role(u.getRoleId(), u.getAuthority()));
-        }
-
-        return user;
-    }
-
-    private void copyDtoToEntity(UserInputDTO dto, User user) {
+        private void copyDtoToEntity(UserInputDTO dto, User user) {
         user.setId(dto.getId());
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
