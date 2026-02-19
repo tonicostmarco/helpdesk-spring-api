@@ -15,12 +15,12 @@ import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.createdAt) " +
+    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.createdAt) " +
             "FROM Ticket obj " +
             "WHERE UPPER(obj.title) LIKE UPPER(CONCAT('%', :title, '%'))")
     Page<TicketMinDTO> findByTitleContainingIgnoreCase(Pageable pageable, @Param("title") String title);
 
-    @Query(value = "SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.createdAt) " +
+    @Query(value = "SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.createdAt) " +
             "FROM Ticket obj " +
             "JOIN obj.client ",
     countQuery = "SELECT COUNT(obj) " +
@@ -28,13 +28,13 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
             "JOIN obj.client")
     Page<TicketMinDTO> findAllWithUsers(Pageable pageable);
 
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.createdAt) " +
+    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.createdAt) " +
             "FROM Ticket obj " +
             "JOIN obj.categories cat " +
             "WHERE UPPER(cat.name) = UPPER(:category)")
     List<TicketMinDTO> findByCategoryContainingIgnoreCase(@Param("category")String category);
 
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.createdAt) " +
+    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.createdAt) " +
             "FROM Ticket obj " +
             "ORDER BY obj.createdAt ASC")
     Page<TicketMinDTO> findAllOldestFirst(Pageable pageable);

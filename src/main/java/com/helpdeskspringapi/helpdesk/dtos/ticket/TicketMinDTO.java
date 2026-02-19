@@ -3,6 +3,7 @@ package com.helpdeskspringapi.helpdesk.dtos.ticket;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
 
 import java.time.Instant;
 
@@ -12,11 +13,14 @@ public class TicketMinDTO {
     private String title;
     private UserMinDTO client;
     private Instant createdAt;
+    private TicketStatus status;
 
-    public TicketMinDTO(Long id, String title, User client, Instant createdAt) {
+
+    public TicketMinDTO(Long id, String title, User client, TicketStatus status, Instant createdAt) {
         this.id = id;
         this.title = title;
         this.client = new UserMinDTO(client);
+        this.status = status;
         this.createdAt = createdAt;
 
     }
@@ -25,6 +29,7 @@ public class TicketMinDTO {
         id = ticket.getId();
         title = ticket.getTitle();
         client = new UserMinDTO(ticket.getClient());
+        status = ticket.getStatus();
         createdAt = ticket.getCreatedAt();
     }
 
@@ -52,6 +57,14 @@ public class TicketMinDTO {
 
     public void setClient(UserMinDTO client) {
         this.client = client;
+    }
+
+    public TicketStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TicketStatus status) {
+        this.status = status;
     }
 
     public Instant getCreatedAt() {

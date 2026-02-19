@@ -138,10 +138,10 @@ public class TicketService {
 
        if (dto.getStatus() != null && dto.getStatus() != ticket.getStatus()) {
            ticket.setUpdatedAt(Instant.now());
-           copyPatchToEntity(dto, ticket);
+           ticket.setStatus(dto.getStatus());
        }
        else {
-           throw new DatabaseException("Wasn't able to change");
+           throw new BusinessException("Wasn't able to change");
        }
 
         ticket = ticketRepository.save(ticket);
@@ -161,8 +161,7 @@ public class TicketService {
 
         try {
             ticketRepository.deleteById(id);
-        }
-        catch (DatabaseException e) {
+        } catch (DatabaseException e) {
             throw new DatabaseException("Referential integrity failure");
         }
 
@@ -179,7 +178,4 @@ public class TicketService {
         ticket.setClient(dto.getClient());
     }
 
-    private void copyPatchToEntity(TicketPatchDTO dto, Ticket ticket) {
-         ticket.setStatus(dto.getStatus());
-    }
 }
