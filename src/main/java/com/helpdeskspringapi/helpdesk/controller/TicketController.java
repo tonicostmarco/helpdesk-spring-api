@@ -3,6 +3,7 @@ package com.helpdeskspringapi.helpdesk.controller;
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,30 +78,40 @@ public class TicketController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<TicketDTO> insert(@Valid @RequestBody TicketDTO dto) {
+    public ResponseEntity<TicketMinDTO> insert(@Valid @RequestBody TicketDTO dto) {
 
-        dto = service.insert(dto);
+        TicketMinDTO inserted = service.insert(dto);
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
                 buildAndExpand(dto.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(dto);
+        return ResponseEntity.created(uri).body(inserted);
 
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPPORT'), 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<TicketDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto){
+    public ResponseEntity<TicketMinDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto){
 
-        dto = service.update(id, dto);
+        TicketMinDTO updated = service.update(id, dto);
 
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(updated);
 
     }
 
-    @PreAuthorize("hasRole('ROLE_SUPPORT'), 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<TicketMinDTO> changeStatus(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto){
+
+        TicketMinDTO updated = service.patch(id, dto);
+
+        return ResponseEntity.ok(updated);
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id){
 

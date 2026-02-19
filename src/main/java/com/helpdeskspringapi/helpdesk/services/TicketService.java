@@ -3,8 +3,10 @@ package com.helpdeskspringapi.helpdesk.services;
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
+import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
 import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,8 +36,8 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
 
-       Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
-       return new TicketMinDTO(ticket);
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        return new TicketMinDTO(ticket);
 
     }
 
@@ -81,15 +84,16 @@ public class TicketService {
             throw new ResourceNotFoundException("Ticket category not found");
         }
     }
+
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findOldestFirst(Pageable pageable) {
 
-             return ticketRepository.findAllOldestFirst(pageable);
+        return ticketRepository.findAllOldestFirst(pageable);
 
     }
 
     @Transactional
-    public TicketDTO insert(TicketDTO dto) {
+    public TicketMinDTO insert(TicketDTO dto) {
 
 
         Set<Long> dtos = dto.getCategories().stream().map(CategoryMinDTO::getId).collect(Collectors.toSet());
@@ -106,27 +110,45 @@ public class TicketService {
         ticket.getCategories().addAll(categories);
         ticket = ticketRepository.save(ticket);
 
-        return new TicketDTO(ticket);
+        return new TicketMinDTO(ticket);
 
     }
 
     @Transactional
-    public TicketDTO update(Long id, TicketDTO dto) {
-             try {
+    public TicketMinDTO update(Long id, TicketDTO dto) {
+        try {
 
             Ticket ticket = ticketRepository.getReferenceById(id);
-
             copyDtoToEntity(dto, ticket);
 
             ticket = ticketRepository.save(ticket);
 
-            return new TicketDTO(ticket);
+            return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
         }
 
-
     }
+
+
+    @Transactional
+    public TicketMinDTO patch(Long id, TicketPatchDTO dto) {
+
+        Ticket ticket = ticketRepository.getReferenceById(id);
+
+       if (dto.getStatus() != null && dto.getStatus() != ticket.getStatus()) {
+           ticket.setUpdatedAt(Instant.now());
+           copyPatchToEntity(dto, ticket);
+       }
+       else {
+           throw new DatabaseException("Wasn't able to change");
+       }
+
+        ticket = ticketRepository.save(ticket);
+
+        return new TicketMinDTO(ticket);
+    }
+
 
     @Transactional
     public void delete(Long id) {
@@ -157,4 +179,7 @@ public class TicketService {
         ticket.setClient(dto.getClient());
     }
 
+    private void copyPatchToEntity(TicketPatchDTO dto, Ticket ticket) {
+         ticket.setStatus(dto.getStatus());
+    }
 }
