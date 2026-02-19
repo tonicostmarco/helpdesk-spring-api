@@ -1,32 +1,22 @@
 package com.helpdeskspringapi.helpdesk.dtos.role;
 
-import com.helpdeskspringapi.helpdesk.entities.Role;
+import org.springframework.security.core.GrantedAuthority;
 
 public class RoleMinDTO {
 
-    private Long id;
     private String authority;
 
-    public RoleMinDTO(Long id, String authority) {
+    public RoleMinDTO(String authority) {
         this.authority = authority;
     }
 
-    public RoleMinDTO(Role role) {
-        id = role.getId();
+    public RoleMinDTO(GrantedAuthority role) {
         authority = role.getAuthority();
 
       }
 
-    public Long getId() {
-        return id;
-    }
-
     public String getAuthority() {
         return authority;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public void setAuthority(String authority) {
