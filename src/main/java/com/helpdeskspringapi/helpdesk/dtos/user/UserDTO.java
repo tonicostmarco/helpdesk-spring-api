@@ -1,8 +1,8 @@
 package com.helpdeskspringapi.helpdesk.dtos.user;
 
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
-import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class UserDTO {
 
     private Set<RoleMinDTO> roles = new HashSet<>();
 
-    public UserDTO(Long id, String name, String email, String phone, String password, Set<RoleMinDTO> roles) {
+    public UserDTO(Long id, String name, String email, String phone, Set<RoleMinDTO> roles) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -32,7 +32,7 @@ public class UserDTO {
         email = user.getEmail();
         phone = user.getPhone();
 
-        for (Role role : user.getRoles()) {
+        for (GrantedAuthority role : user.getRoles()) {
             roles.add(new RoleMinDTO(role));
         }
     }

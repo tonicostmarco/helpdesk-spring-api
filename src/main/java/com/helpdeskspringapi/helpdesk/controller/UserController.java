@@ -4,6 +4,7 @@ import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
+import com.helpdeskspringapi.helpdesk.services.UserAuthService;
 import com.helpdeskspringapi.helpdesk.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,22 @@ public class UserController {
     @Autowired
     private UserService service;
 
+    @Autowired
+    private UserAuthService authService;
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserMinDTO> findById(@PathVariable Long id){
 
         UserMinDTO dto = service.findById(id);
+
+        return ResponseEntity.ok(dto);
+
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> findMe(){
+
+        UserDTO dto = authService.getMe();
 
         return ResponseEntity.ok(dto);
 
