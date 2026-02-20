@@ -197,15 +197,4 @@ public class TicketService {
 
     }
 
-    private void copyDtoToEntity(TicketDTO dto, Ticket ticket) {
-        ticket.setId(dto.getId());
-        ticket.setTitle(dto.getTitle());
-        ticket.setDescription(dto.getDescription());
-        ticket.setCreatedAt(Instant.now());
-        ticket.setUpdatedAt(Instant.EPOCH);
-        ticket.setPriority(dto.getPriority());
-        ticket.setStatus(dto.getStatus());
-        ticket.setClient(dto.getClient());
-    }
-
 }
