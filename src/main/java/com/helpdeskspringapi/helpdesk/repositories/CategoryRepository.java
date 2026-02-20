@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO(obj.id, obj.name) " +
+    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO(obj.id, obj.name, obj.description) " +
             "FROM Category obj " +
             "JOIN  obj.categoryTickets")
     List<CategoryMinDTO> findAllWithTickets(List<Category> categories);
