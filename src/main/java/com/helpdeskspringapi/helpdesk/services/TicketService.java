@@ -1,28 +1,34 @@
 package com.helpdeskspringapi.helpdesk.services;
 
+import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
-import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
-import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
-import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
-import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
+import com.helpdeskspringapi.helpdesk.exceptions.*;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.*;
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+
 
 @Service
 public class TicketService {
@@ -51,8 +57,14 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findAll(Pageable pageable) {
-        Page<Ticket> ticket = ticketRepository.findAll(pageable);
-        return ticket.map(TicketMinDTO::new);
+
+        try {
+            Page<Ticket> ticket = ticketRepository.findAll(pageable);
+            return ticket.map(TicketMinDTO::new);
+        }
+        catch (ForbiddenException e) {
+            throw new ForbiddenException("Access denied");
+        }
 
     }
 
@@ -101,12 +113,11 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketMinDTO insert(TicketDTO dto) {
+    public TicketMinDTO insert(TicketInputDTO dto) {
 
-        User user = new User();
-        authService.selfOrAdmin(user.getId());
+        User me = userAuthService.authenticated();
 
-        Set<Long> dtos = dto.getCategories().stream().map(CategoryMinDTO::getId).collect(Collectors.toSet());
+        Set<Long> dtos = dto.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
 
         List<Category> categories = categoryRepository.findAllById(dtos);
 
@@ -115,9 +126,19 @@ public class TicketService {
         }
 
         Ticket ticket = new Ticket();
-        copyDtoToEntity(dto, ticket);
-
+        ticket.getCategories().clear();
         ticket.getCategories().addAll(categories);
+
+
+
+        ticket.setTitle(dto.getTitle());
+        ticket.setDescription(dto.getDescription());
+        ticket.setPriority(LOW);
+        ticket.setStatus(OPEN);
+        ticket.setCreatedAt(Instant.now());
+        ticket.setUpdatedAt(Instant.EPOCH);
+        ticket.setClient(me);
+
         ticket = ticketRepository.save(ticket);
 
         return new TicketMinDTO(ticket);
@@ -129,11 +150,13 @@ public class TicketService {
         try {
 
             Ticket ticket = ticketRepository.getReferenceById(id);
-            copyDtoToEntity(dto, ticket);
+            ticket.setPriority(dto.getPriority());
+            ticket.setStatus(dto.getStatus());
+            ticket.setUpdatedAt(Instant.now());
 
             ticket = ticketRepository.save(ticket);
-
             return new TicketMinDTO(ticket);
+
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
         }
@@ -153,7 +176,6 @@ public class TicketService {
        else {
            throw new BusinessException("Wasn't able to change");
        }
-
         ticket = ticketRepository.save(ticket);
 
         return new TicketMinDTO(ticket);
@@ -164,9 +186,7 @@ public class TicketService {
     public void delete(Long id) {
 
         if (!ticketRepository.existsById(id)) {
-
             throw new ResourceNotFoundException("Id not found");
-
         }
 
         try {

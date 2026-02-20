@@ -1,7 +1,7 @@
 package com.helpdeskspringapi.helpdesk.controller;
 
-import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
@@ -36,7 +36,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<TicketMinDTO>> findAll(Pageable pageable){
+    public ResponseEntity<Page<TicketMinDTO>> findAll(@Valid Pageable pageable){
 
         Page<TicketMinDTO> dto = service.findAll(pageable);
 
@@ -78,9 +78,9 @@ public class TicketController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
     @PostMapping
-    public ResponseEntity<TicketMinDTO> insert(@Valid @RequestBody TicketDTO dto) {
+    public ResponseEntity<TicketMinDTO> insert(@Valid @RequestBody TicketInputDTO dto) {
 
         TicketMinDTO inserted = service.insert(dto);
 
