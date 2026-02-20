@@ -6,6 +6,7 @@ import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
+import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
 import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
@@ -32,11 +33,18 @@ public class TicketService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private AuthService authService;
+
+    @Autowired
+    private UserAuthService userAuthService;
 
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
 
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        authService.selfOrAdmin(ticket.getClient().getId());
+
         return new TicketMinDTO(ticket);
 
     }
@@ -95,6 +103,8 @@ public class TicketService {
     @Transactional
     public TicketMinDTO insert(TicketDTO dto) {
 
+        User user = new User();
+        authService.selfOrAdmin(user.getId());
 
         Set<Long> dtos = dto.getCategories().stream().map(CategoryMinDTO::getId).collect(Collectors.toSet());
 
@@ -171,8 +181,8 @@ public class TicketService {
         ticket.setId(dto.getId());
         ticket.setTitle(dto.getTitle());
         ticket.setDescription(dto.getDescription());
-        ticket.setCreatedAt(dto.getCreatedAt());
-        ticket.setUpdatedAt(dto.getUpdatedAt());
+        ticket.setCreatedAt(Instant.now());
+        ticket.setUpdatedAt(Instant.EPOCH);
         ticket.setPriority(dto.getPriority());
         ticket.setStatus(dto.getStatus());
         ticket.setClient(dto.getClient());

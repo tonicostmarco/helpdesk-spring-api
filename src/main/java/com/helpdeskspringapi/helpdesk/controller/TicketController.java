@@ -24,9 +24,9 @@ public class TicketController {
     @Autowired
     private TicketService service;
 
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<TicketMinDTO> findById(@PathVariable @Valid Long id){
+    public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id){
 
         TicketMinDTO dto = service.findById(id);
 
