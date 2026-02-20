@@ -120,6 +120,11 @@ public class Ticket {
         return categories;
     }
 
+    public void addCategory(Category category) {
+        categories.add(category);
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
