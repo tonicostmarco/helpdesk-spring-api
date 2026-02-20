@@ -3,6 +3,7 @@ package com.helpdeskspringapi.helpdesk.controller.handlers;
 import com.helpdeskspringapi.helpdesk.dtos.error.CustomError;
 import com.helpdeskspringapi.helpdesk.dtos.error.ValidationError;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
+import com.helpdeskspringapi.helpdesk.exceptions.ForbiddenException;
 import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,6 +68,16 @@ public class ControllerExceptionHandler {
         }
         return ResponseEntity.status(status).body(error);
 
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomError> forbidden(ForbiddenException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(error);
     }
 
 }
