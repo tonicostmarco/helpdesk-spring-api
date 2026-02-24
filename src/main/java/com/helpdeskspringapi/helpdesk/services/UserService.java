@@ -1,5 +1,7 @@
 package com.helpdeskspringapi.helpdesk.services;
 
+import com.helpdeskspringapi.helpdesk.config.AuthorizationServerConfig;
+import com.helpdeskspringapi.helpdesk.config.CryptoConfig;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
@@ -35,6 +37,9 @@ public class UserService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private CryptoConfig serverConfig;
 
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {
@@ -148,8 +153,8 @@ public class UserService {
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPhone(dto.getPhone());
-        user.setPassword(dto.getPassword());
-    }
+        dto.setPassword(serverConfig.passwordEncoder().encode(dto.getPassword()));
+        }
 
 
 }
