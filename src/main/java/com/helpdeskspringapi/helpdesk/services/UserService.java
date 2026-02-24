@@ -1,13 +1,10 @@
 package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.config.AuthorizationServerConfig;
-import com.helpdeskspringapi.helpdesk.config.CryptoConfig;
-import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
-import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
 import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
@@ -39,7 +36,7 @@ public class UserService {
     private AuthService authService;
 
     @Autowired
-    private CryptoConfig serverConfig;
+    private AuthorizationServerConfig serverConfig;
 
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {
