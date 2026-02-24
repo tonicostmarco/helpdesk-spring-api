@@ -1,11 +1,11 @@
 package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
-import com.helpdeskspringapi.helpdesk.dtos.category.CategoryMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
+import com.helpdeskspringapi.helpdesk.dtos.twillio.MessageRequest;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
@@ -15,6 +15,8 @@ import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.*;
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.*;
 
+import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +46,9 @@ public class TicketService {
 
     @Autowired
     private UserAuthService userAuthService;
+
+    @Autowired
+    private MessageSender messageSender;
 
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
@@ -176,7 +181,15 @@ public class TicketService {
        else {
            throw new BusinessException("Wasn't able to change");
        }
-        ticket = ticketRepository.save(ticket);
+
+
+
+       ticket = ticketRepository.save(ticket);
+
+        messageSender.sendSms(
+                new MessageRequest(userAuthService.getMe().getName(),
+                19, ticketRepository.getReferenceById(id).getClient().getPhone(),
+                "Your ticket has been updated. "), "Status: " + dto.getStatus());
 
         return new TicketMinDTO(ticket);
     }
