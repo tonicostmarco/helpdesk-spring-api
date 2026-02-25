@@ -38,22 +38,21 @@ public class Role implements GrantedAuthority {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Set<User> getUsers() {
+        return users;
     }
 
     public String getAuthority() {
         return authority;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void setAuthority(String authority) {
         this.authority = authority;
     }
-
-    public Set<User> getUsers() {
-        return users;
-    }
-
 
     @Override
     public boolean equals(Object o) {

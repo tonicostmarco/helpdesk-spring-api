@@ -13,7 +13,7 @@ public class RoleMinDTO {
     public RoleMinDTO(GrantedAuthority role) {
         authority = role.getAuthority();
 
-      }
+    }
 
     public String getAuthority() {
         return authority;

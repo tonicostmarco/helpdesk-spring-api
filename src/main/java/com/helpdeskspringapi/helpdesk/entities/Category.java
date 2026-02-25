@@ -19,7 +19,7 @@ public class Category {
     private String description;
 
     @ManyToMany(mappedBy = "categories")
-    private Set<Ticket> categoryTickets = new HashSet<>();
+    private final Set<Ticket> categoryTickets = new HashSet<>();
 
     public Category() {
     }
@@ -34,28 +34,28 @@ public class Category {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Set<Ticket> getCategoryTickets() {
         return categoryTickets;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

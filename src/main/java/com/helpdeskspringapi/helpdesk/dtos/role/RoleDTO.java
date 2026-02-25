@@ -31,7 +31,7 @@ public class RoleDTO {
             users.add(new UserMinDTO(user));
         }
 
-      }
+    }
 
     public Long getId() {
         return id;
@@ -44,6 +44,7 @@ public class RoleDTO {
     public Set<UserMinDTO> getUsers() {
         return users;
     }
+
 
     public void setId(Long id) {
         this.id = id;

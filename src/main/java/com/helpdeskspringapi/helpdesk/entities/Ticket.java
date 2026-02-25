@@ -56,74 +56,69 @@ public class Ticket {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public TicketPriority getPriority() {
         return priority;
-    }
-
-    public void setPriority(TicketPriority priority) {
-        this.priority = priority;
     }
 
     public TicketStatus getStatus() {
         return status;
     }
 
-    public void setStatus(TicketStatus status) {
-        this.status = status;
-    }
-
     public User getClient() {
         return client;
-    }
-
-    public void setClient(User client) {
-        this.client = client;
     }
 
     public Set<Category> getCategories() {
         return categories;
     }
 
-    public void addCategory(Category category) {
-        categories.add(category);
+    public void setId(Long id) {
+        this.id = id;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setPriority(TicketPriority priority) {
+        this.priority = priority;
+    }
+
+    public void setStatus(TicketStatus status) {
+        this.status = status;
+    }
+
+    public void setClient(User client) {
+        this.client = client;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -64,6 +64,30 @@ public class TicketDTO {
         return id;
     }
 
+    public TicketPriority getPriority() {
+        return priority;
+    }
+
+    public TicketStatus getStatus() {
+        return status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public User getClient() {
+        return client;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -72,52 +96,29 @@ public class TicketDTO {
         return title;
     }
 
+
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
     }
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public TicketPriority getPriority() {
-        return priority;
-    }
-
     public void setPriority(TicketPriority priority) {
         this.priority = priority;
     }
 
-    public TicketStatus getStatus() {
-        return status;
-    }
-
     public void setStatus(TicketStatus status) {
         this.status = status;
-    }
-
-    public User getClient() {
-        return client;
     }
 
     public void setClient(User client) {

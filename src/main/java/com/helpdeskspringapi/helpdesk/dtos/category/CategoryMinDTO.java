@@ -8,14 +8,15 @@ public class CategoryMinDTO {
     private String name;
     private String description;
 
-      public CategoryMinDTO(Long id, String name, String description) {
+    public CategoryMinDTO(Long id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
     }
 
     public CategoryMinDTO(Category category) {
-        id = category.getId();;
+        id = category.getId();
+        ;
         name = category.getName();
         description = category.getDescription();
 

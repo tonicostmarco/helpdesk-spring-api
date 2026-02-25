@@ -55,7 +55,7 @@ public class ControllerExceptionHandler {
 
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
-        ValidationError error = new ValidationError(Instant.now(), status.value(),"ERROR", request.getRequestURI());
+        ValidationError error = new ValidationError(Instant.now(), status.value(), "ERROR", request.getRequestURI());
 
         for (FieldError f : e.getFieldErrors()) {
             error.addError(f.getField(), f.getDefaultMessage());
@@ -88,7 +88,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(MessageException.class)
-    public ResponseEntity<CustomError> message(BusinessException e, HttpServletRequest request) {
+    public ResponseEntity<CustomError> message(MessageException e, HttpServletRequest request) {
 
         HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
 

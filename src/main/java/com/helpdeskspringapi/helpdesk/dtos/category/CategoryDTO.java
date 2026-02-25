@@ -3,6 +3,9 @@ package com.helpdeskspringapi.helpdesk.dtos.category;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,9 +13,16 @@ import java.util.Set;
 public class CategoryDTO {
 
     private Long id;
+
+    @Size(min = 3, max = 30, message = "Category name must have between 1 and 30 characters")
+    @NotBlank(message = "Category name must be filled")
     private String name;
+
+    @Size(min = 5, max = 150, message = "Description must have between 5 and 15 characters")
+    @NotBlank(message = "Title must be filled")
     private String description;
 
+    @NotEmpty(message = "Category required")
     private Set<TicketMinDTO> tickets = new HashSet<>();
 
     public CategoryDTO() {
