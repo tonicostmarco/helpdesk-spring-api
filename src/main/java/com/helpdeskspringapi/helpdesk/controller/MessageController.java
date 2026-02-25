@@ -15,10 +15,9 @@ public class MessageController {
     @Autowired
     private MessageSender sender;
 
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @PostMapping("/send-message")
     public ResponseEntity<Void> sender(@RequestBody MessageRequest request) {
-        sender.sendSms(request, request.message());
+        sender.sendSms(request);
 
         return ResponseEntity.ok().build();
 

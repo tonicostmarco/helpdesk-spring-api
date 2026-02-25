@@ -23,7 +23,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<CategoryMinDTO> findById(@PathVariable Long id){
+    public ResponseEntity<CategoryMinDTO> findById(@PathVariable Long id) {
 
         CategoryMinDTO dto = service.findById(id);
 
@@ -33,7 +33,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<CategoryMinDTO>> findAll(){
+    public ResponseEntity<List<CategoryMinDTO>> findAll() {
 
         List<CategoryMinDTO> dto = service.findAll();
 
@@ -43,7 +43,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchtickets")
-    public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets(Pageable pageable){
+    public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets(Pageable pageable) {
 
         List<CategoryMinDTO> dto = service.findAllWithTickets();
 
@@ -66,7 +66,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<CategoryMinDTO> update(@PathVariable Long id, @RequestBody CategoryMinDTO dto){
+    public ResponseEntity<CategoryMinDTO> update(@PathVariable Long id, @RequestBody CategoryMinDTO dto) {
 
         dto = service.update(id, dto);
 
@@ -78,7 +78,7 @@ public class CategoryController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
 
         service.delete(id);
 

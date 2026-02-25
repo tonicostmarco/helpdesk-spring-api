@@ -24,8 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.LOW;
-import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.OPEN;
-
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.*;
 
 
 @Service
@@ -62,8 +61,7 @@ public class TicketService {
         try {
             Page<Ticket> ticket = ticketRepository.findAll(pageable);
             return ticket.map(TicketMinDTO::new);
-        }
-        catch (ForbiddenException e) {
+        } catch (ForbiddenException e) {
             throw new ForbiddenException("Access denied");
         }
 
@@ -130,8 +128,6 @@ public class TicketService {
         ticket.getCategories().clear();
         ticket.getCategories().addAll(categories);
 
-
-
         ticket.setTitle(dto.getTitle());
         ticket.setDescription(dto.getDescription());
         ticket.setPriority(LOW);
@@ -141,6 +137,11 @@ public class TicketService {
         ticket.setClient(me);
 
         ticket = ticketRepository.save(ticket);
+
+        messageSender.sendSms(
+                new MessageRequest(userAuthService.getMe().getName(),
+                        me.getDdd(), me.getPhone(),
+                        "Your ticket has been created. Status: " + ticket.getStatus()));
 
         return new TicketMinDTO(ticket);
 
@@ -156,6 +157,11 @@ public class TicketService {
             ticket.setUpdatedAt(Instant.now());
 
             ticket = ticketRepository.save(ticket);
+            messageSender.sendSms(
+                    new MessageRequest(userAuthService.getMe().getName(),
+                            ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
+                            "Your ticket has been updated. Status: " + dto.getStatus()));
+
             return new TicketMinDTO(ticket);
 
         } catch (ResourceNotFoundException e) {
@@ -166,9 +172,8 @@ public class TicketService {
 
 
     @Transactional
-    public TicketMinDTO patch(Long id, TicketPatchDTO dto) {
-
-        try {
+    public TicketMinDTO patchStatus(Long id, TicketPatchDTO dto) {
+           try {
             Ticket ticket = ticketRepository.getReferenceById(id);
 
             if (dto.getStatus() != null && dto.getStatus() != ticket.getStatus()) {
@@ -178,21 +183,45 @@ public class TicketService {
                 throw new BusinessException("Wasn't able to change");
             }
 
-
             ticket = ticketRepository.save(ticket);
 
             messageSender.sendSms(
                     new MessageRequest(userAuthService.getMe().getName(),
                             ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                            "Your ticket has been updated. "), "Status: " + dto.getStatus());
-
+                            "Your ticket has been updated. Status: " + dto.getStatus()));
 
             return new TicketMinDTO(ticket);
-        }
-        catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
+        } catch (RuntimeException e) {
+            throw new MessageException("Wasn't able to deliver the message");
         }
-        catch (RuntimeException e) {
+    }
+
+    @Transactional
+    public TicketMinDTO patchPriority(Long id, TicketPatchDTO dto) {
+
+        try {
+            Ticket ticket = ticketRepository.getReferenceById(id);
+
+            if (dto.getPriority() != null && dto.getPriority() != ticket.getPriority()) {
+                ticket.setUpdatedAt(Instant.now());
+                ticket.setPriority(dto.getPriority());
+            } else {
+                throw new BusinessException("Wasn't able to change");
+            }
+
+            ticket = ticketRepository.save(ticket);
+
+            messageSender.sendSms(
+                    new MessageRequest("SYSTEM",
+                            ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
+                            "Your ticket has been updated. Priority: " + dto.getStatus()));
+
+            return new TicketMinDTO(ticket);
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Ticket ID not found");
+        } catch (RuntimeException e) {
             throw new MessageException("Wasn't able to deliver the message");
         }
     }
@@ -204,9 +233,13 @@ public class TicketService {
         if (!ticketRepository.existsById(id)) {
             throw new ResourceNotFoundException("Id not found");
         }
+        if (!ticketRepository.getReferenceById(id).getStatus().equals(CLOSED)) {
+            throw new BusinessException("You can't delete an opened ticket");
+        }
 
         try {
             ticketRepository.deleteById(id);
+
         } catch (DatabaseException e) {
             throw new DatabaseException("Referential integrity failure");
         }

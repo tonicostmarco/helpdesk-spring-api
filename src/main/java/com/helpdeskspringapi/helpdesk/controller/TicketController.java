@@ -26,7 +26,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id){
+    public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id) {
 
         TicketMinDTO dto = service.findById(id);
 
@@ -36,7 +36,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<TicketMinDTO>> findAll(@Valid Pageable pageable){
+    public ResponseEntity<Page<TicketMinDTO>> findAll(@Valid Pageable pageable) {
 
         Page<TicketMinDTO> dto = service.findAll(pageable);
 
@@ -46,7 +46,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchusers")
-    public ResponseEntity<Page<TicketMinDTO>> findAllWithUsers(Pageable pageable){
+    public ResponseEntity<Page<TicketMinDTO>> findAllWithUsers(Pageable pageable) {
 
         Page<TicketMinDTO> dto = service.findAllWithUsers(pageable);
 
@@ -56,7 +56,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchtitle")
-    public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title){
+    public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title) {
 
         return ResponseEntity.ok(service.findByTitle(pageable, title));
 
@@ -64,7 +64,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchcategory")
-    public ResponseEntity<List<TicketMinDTO>> findByCategory(@Valid @RequestParam String category){
+    public ResponseEntity<List<TicketMinDTO>> findByCategory(@Valid @RequestParam String category) {
 
         return ResponseEntity.ok(service.findByCategory(category));
 
@@ -72,7 +72,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/byoldest")
-    public ResponseEntity<Page<TicketMinDTO>> findOldestFirst(Pageable pageable){
+    public ResponseEntity<Page<TicketMinDTO>> findOldestFirst(Pageable pageable) {
 
         return ResponseEntity.ok(service.findOldestFirst(pageable));
 
@@ -93,7 +93,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<TicketMinDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto){
+    public ResponseEntity<TicketMinDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto) {
 
         TicketMinDTO updated = service.update(id, dto);
 
@@ -104,10 +104,20 @@ public class TicketController {
     //adicionar patch para o usuario cancelar o chamado se ele quiser
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
-    @PatchMapping(value = "/{id}")
-    public ResponseEntity<TicketMinDTO> changeStatus(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto){
+    @PatchMapping(value = "/{id}/status")
+    public ResponseEntity<TicketMinDTO> changeStatus(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
 
-        TicketMinDTO updated = service.patch(id, dto);
+        TicketMinDTO updated = service.patchStatus(id, dto);
+
+        return ResponseEntity.ok(updated);
+
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PatchMapping(value = "/{id}/priority")
+    public ResponseEntity<TicketMinDTO> changePriority(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
+
+        TicketMinDTO updated = service.patchPriority(id, dto);
 
         return ResponseEntity.ok(updated);
 
@@ -115,7 +125,7 @@ public class TicketController {
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@Valid @PathVariable Long id){
+    public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
 
         service.delete(id);
 

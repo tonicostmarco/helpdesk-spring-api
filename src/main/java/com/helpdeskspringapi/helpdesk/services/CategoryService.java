@@ -6,7 +6,6 @@ import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
 import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
-import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -21,14 +20,10 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
-    private TicketRepository ticketRepository;
-
-
     @Transactional(readOnly = true)
     public CategoryMinDTO findById(Long id) {
 
-       Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found"));
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Id not found"));
 
         return new CategoryMinDTO(category);
 
@@ -54,7 +49,7 @@ public class CategoryService {
     @Transactional
     public CategoryMinDTO insert(CategoryMinDTO dto) {
 
-        if(categoryRepository.existsByName(dto.getName())) {
+        if (categoryRepository.existsByName(dto.getName())) {
             throw new DatabaseException("Category Already exists");
         }
 
@@ -81,8 +76,7 @@ public class CategoryService {
             category = categoryRepository.save(category);
 
             return new CategoryMinDTO(category);
-        }
-        catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Category not found");
         }
 
@@ -93,11 +87,9 @@ public class CategoryService {
 
         try {
             categoryRepository.deleteById(id);
-        }
-        catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Category not found");
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity failure");
         }
 
@@ -109,7 +101,6 @@ public class CategoryService {
         category.setDescription(dto.getDescription());
 
     }
-
 
 
 }

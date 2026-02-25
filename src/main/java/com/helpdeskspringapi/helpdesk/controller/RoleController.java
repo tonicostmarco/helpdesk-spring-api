@@ -26,7 +26,7 @@ public class RoleController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<RoleDTO> findById(@PathVariable Long id){
+    public ResponseEntity<RoleDTO> findById(@PathVariable Long id) {
 
         RoleDTO dto = service.findById(id);
 
@@ -36,7 +36,7 @@ public class RoleController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<RoleMinDTO>> findAll(){
+    public ResponseEntity<List<RoleMinDTO>> findAll() {
 
         List<RoleMinDTO> dto = service.findAll();
 
@@ -46,7 +46,7 @@ public class RoleController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/searchusers")
-    public ResponseEntity<List<RoleDTO>> findAllWithUsers(){
+    public ResponseEntity<List<RoleDTO>> findAllWithUsers() {
 
         List<RoleDTO> dto = service.findAllWithUsers();
 

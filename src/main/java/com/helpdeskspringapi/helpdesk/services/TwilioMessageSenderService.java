@@ -18,20 +18,19 @@ public class TwilioMessageSenderService implements MessageSender {
     }
 
 
-
     @Override
-    public void sendSms(MessageRequest request, String body) {
+    public void sendSms(MessageRequest request) {
 
-          Message message = Message
+        Message message = Message
                 .creator(
                         new PhoneNumber("whatsapp:+55" + request.ddd() + request.phoneNumber()),
                         new PhoneNumber(config.getTrialNumber()),
-                        request.message() + body
+                        request.message()
                 )
                 .create();
 
         System.out.println(message.getSid());
     }
 
-    }
+}
 

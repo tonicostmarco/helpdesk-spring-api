@@ -1,6 +1,7 @@
 package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.config.AuthorizationServerConfig;
+import com.helpdeskspringapi.helpdesk.dtos.twillio.MessageRequest;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
@@ -38,14 +39,20 @@ public class UserService {
     @Autowired
     private AuthorizationServerConfig serverConfig;
 
+    @Autowired
+    private MessageSender messageSender;
+
+    @Autowired
+    private UserAuthService userAuthService;
+
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {
 
-           User user = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-           authService.selfOrAdmin(user.getId());
+        authService.selfOrAdmin(user.getId());
 
-           return new UserMinDTO(user);
+        return new UserMinDTO(user);
 
     }
 
@@ -88,12 +95,13 @@ public class UserService {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new BusinessException("Email already registered");
         }
-            Set<Long> ids = dto.getRoles().stream().map(x -> x.getId()).collect(Collectors.toSet());
-            List<Role> roles = roleRepository.findAllById(ids);
+        Set<Long> ids = dto.getRoles().stream().map(x -> x.getId()).collect(Collectors.toSet());
+        List<Role> roles = roleRepository.findAllById(ids);
 
         if (roles.size() != ids.size()) {
             throw new ResourceNotFoundException("There is 1 or more invalid id.");
         }
+
 
         User user = new User();
         user.getRoles().clear();
@@ -101,8 +109,14 @@ public class UserService {
 
         copyDtoToEntity(dto, user);
 
-            user = userRepository.save(user);
-            return new UserDTO(user);
+        user = userRepository.save(user);
+
+        messageSender.sendSms(
+                new MessageRequest(userAuthService.getMe().getName(),
+                        dto.getDdd(), dto.getPhone(),
+                        "Your account has been created! Welcome, " + dto.getName() + "!" + "Your login is your email and your password"));
+
+        return new UserDTO(user);
 
     }
 
@@ -116,11 +130,9 @@ public class UserService {
             user = userRepository.save(user);
 
             return new UserDTO(user);
-        }
-        catch (ResourceNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("User not found");
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new BusinessException("Email already registered");
         }
 
@@ -135,20 +147,19 @@ public class UserService {
 
         try {
             userRepository.deleteById(id);
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity failure");
         }
     }
 
-        private void copyDtoToEntity(UserInputDTO dto, User user) {
+    private void copyDtoToEntity(UserInputDTO dto, User user) {
         user.setId(dto.getId());
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setDdd(dto.getDdd());
         user.setPhone(dto.getPhone());
-        dto.setPassword(serverConfig.passwordEncoder().encode(dto.getPassword()));
-        }
+        user.setPassword(serverConfig.passwordEncoder().encode(dto.getPassword()));
+    }
 
 
 }

@@ -29,7 +29,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<UserMinDTO> findById(@PathVariable Long id){
+    public ResponseEntity<UserMinDTO> findById(@PathVariable Long id) {
 
         UserMinDTO dto = service.findById(id);
 
@@ -39,7 +39,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> findMe(){
+    public ResponseEntity<UserDTO> findMe() {
 
         UserDTO dto = authService.getMe();
 
@@ -49,7 +49,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/search")
-    public ResponseEntity<Set<UserMinDTO>> findByName(@Valid @RequestParam String name){
+    public ResponseEntity<Set<UserMinDTO>> findByName(@Valid @RequestParam String name) {
 
         return ResponseEntity.ok(service.findByName(name));
 
@@ -57,7 +57,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<Page<UserMinDTO>> findAll(Pageable pageable){
+    public ResponseEntity<Page<UserMinDTO>> findAll(Pageable pageable) {
 
 
         return ResponseEntity.ok(service.findAll(pageable));
@@ -66,7 +66,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/searchroles")
-    public ResponseEntity<Page<UserMinDTO>> findAllWithRoles(Pageable pageable){
+    public ResponseEntity<Page<UserMinDTO>> findAllWithRoles(Pageable pageable) {
 
         Page<UserMinDTO> dto = service.findAllWithRoles(pageable);
 
@@ -86,7 +86,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserInputDTO dto){
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserInputDTO dto) {
 
         return ResponseEntity.ok(service.update(id, dto));
 
@@ -96,7 +96,7 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
 
         service.delete(id);
 
