@@ -2,6 +2,8 @@ package com.helpdeskspringapi.helpdesk.dtos.user;
 
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.HashSet;
@@ -13,14 +15,17 @@ public class UserDTO {
     private String name;
 
     private String email;
+
+    private Integer ddd;
     private String phone;
 
     private Set<RoleMinDTO> roles = new HashSet<>();
 
-    public UserDTO(Long id, String name, String email, String phone, Set<RoleMinDTO> roles) {
+    public UserDTO(Long id, String name, String email, Integer ddd, String phone, Set<RoleMinDTO> roles) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.ddd = ddd;
         this.phone = phone;
         this.roles = roles;
     }
@@ -30,6 +35,7 @@ public class UserDTO {
         id = user.getId();
         name = user.getName();
         email = user.getEmail();
+        ddd = user.getDdd();
         phone = user.getPhone();
 
         for (GrantedAuthority role : user.getRoles()) {
@@ -48,10 +54,13 @@ public class UserDTO {
         return email;
     }
 
+    public Integer getDdd() {
+        return ddd;
+    }
+
     public String getPhone() {
         return phone;
     }
-
 
     public Set<RoleMinDTO> getRoles() {
         return roles;

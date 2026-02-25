@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,6 +27,7 @@ public class UserController {
     @Autowired
     private UserAuthService authService;
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserMinDTO> findById(@PathVariable Long id){
 
@@ -35,6 +37,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> findMe(){
 
@@ -44,6 +47,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<Set<UserMinDTO>> findByName(@Valid @RequestParam String name){
 
@@ -51,6 +55,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserMinDTO>> findAll(Pageable pageable){
 
@@ -59,6 +64,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/searchroles")
     public ResponseEntity<Page<UserMinDTO>> findAllWithRoles(Pageable pageable){
 
@@ -78,6 +84,7 @@ public class UserController {
 
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @Valid @RequestBody UserInputDTO dto){
 
@@ -85,6 +92,9 @@ public class UserController {
 
     }
 
+    //adicionar patch pra senha/nome
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
 

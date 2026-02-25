@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -20,6 +21,7 @@ public class CategoryController {
     @Autowired
     private CategoryService service;
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<CategoryMinDTO> findById(@PathVariable Long id){
 
@@ -29,6 +31,7 @@ public class CategoryController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<CategoryMinDTO>> findAll(){
 
@@ -38,6 +41,7 @@ public class CategoryController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchtickets")
     public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets(Pageable pageable){
 
@@ -47,6 +51,7 @@ public class CategoryController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<CategoryMinDTO> insert(@RequestBody CategoryMinDTO dto) {
 
@@ -59,6 +64,7 @@ public class CategoryController {
 
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @PutMapping(value = "/{id}")
     public ResponseEntity<CategoryMinDTO> update(@PathVariable Long id, @RequestBody CategoryMinDTO dto){
 
@@ -68,6 +74,9 @@ public class CategoryController {
 
     }
 
+    //adicionar patch pra mudar somente titulo/descrição
+
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
 

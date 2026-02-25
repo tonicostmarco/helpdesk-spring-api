@@ -3,14 +3,14 @@ INSERT INTO tb_role (id, authority) VALUES (2, 'ROLE_NOC');
 INSERT INTO tb_role (id, authority) VALUES (3, 'ROLE_SUPPORT');
 INSERT INTO tb_role (id, authority) VALUES (4, 'ROLE_CLIENT');
 
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Marco Admin', 'admin@helpdesk.com', '991731543', '$2b$10$8orZfrgp/uRwNstcqzYmI.jtGSlcpLEugS0xk1wefRW2KUOkEuuf2');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Bruno NOC', 'noc@helpdesk.com', '900000002', '$2b$10$Mpzz35YK9HNl9jYnCzUfGOTcCO6m9VCZN5LLf0A2h95hHgqmIbVmS');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Carla Support', 'support@helpdesk.com', '+900000003', '$2b$10$TrElmLFoQwvZae9QaLVIyunLhZusMt8SOYzd0OoAHP6GqHtrJAHAO');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Ana Client', 'ana.client@helpdesk.com', '+900000101', '$2b$10$Ty6KX0h6tq61laA6fnfrou2ndQtDTyRdA5gV5nDiXV7dZrJ3xHNVO');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Diego Client', 'diego.client@helpdesk.com', '900000102', '$2b$10$r3oTgc2eRQ5pLqkCn2nV0Oh0NfitIq/hkrgOwyYcjDmGI06C55y7e');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Julia Client', 'julia.client@helpdesk.com', '991731543', '$2b$10$Z1jUZ9Ut9gBDOiUvvsBfq..tZQxmdisPEb3zsJgUbDvyzpDP1XWh2');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Rafael Client', 'rafael.client@helpdesk.com', '900000104', '$2b$10$gUXR3MIJqJ8bzDCvpMdyRu7Lhqu5k9vh5NO3ue9mG247pGhgExpQm');
-INSERT INTO tb_user (name, email, phone, password) VALUES ('Livia Client', 'livia.client@helpdesk.com', '900000105', '$2b$10$BCRIgkfTOhnk2slbeL9AWOINkJkdxHnU7vuChCxV.DjKDcfYuqFgO');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Marco Admin', 'admin@helpdesk.com', 11, '991731543', '$2b$10$8orZfrgp/uRwNstcqzYmI.jtGSlcpLEugS0xk1wefRW2KUOkEuuf2');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Bruno NOC', 'noc@helpdesk.com', 11, '900000002', '$2b$10$Mpzz35YK9HNl9jYnCzUfGOTcCO6m9VCZN5LLf0A2h95hHgqmIbVmS');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Carla Support', 'support@helpdesk.com', 11, '900000003', '$2b$10$TrElmLFoQwvZae9QaLVIyunLhZusMt8SOYzd0OoAHP6GqHtrJAHAO');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Ana Client', 'ana.client@helpdesk.com', 11, '900000101', '$2b$10$Ty6KX0h6tq61laA6fnfrou2ndQtDTyRdA5gV5nDiXV7dZrJ3xHNVO');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Diego Client', 'diego.client@helpdesk.com', 11, '900000102', '$2b$10$r3oTgc2eRQ5pLqkCn2nV0Oh0NfitIq/hkrgOwyYcjDmGI06C55y7e');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Julia Client', 'julia.client@helpdesk.com', 19, '991731543', '$2b$10$Z1jUZ9Ut9gBDOiUvvsBfq..tZQxmdisPEb3zsJgUbDvyzpDP1XWh2');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Rafael Client', 'rafael.client@helpdesk.com', 11, '900000104', '$2b$10$gUXR3MIJqJ8bzDCvpMdyRu7Lhqu5k9vh5NO3ue9mG247pGhgExpQm');
+INSERT INTO tb_user (name, email, ddd, phone, password) VALUES ('Livia Client', 'livia.client@helpdesk.com', 11, '900000105', '$2b$10$BCRIgkfTOhnk2slbeL9AWOINkJkdxHnU7vuChCxV.DjKDcfYuqFgO');
 
 INSERT INTO tb_user_role (user_id, role_id) SELECT u.id, 1 FROM tb_user u WHERE u.email='admin@helpdesk.com';
 INSERT INTO tb_user_role (user_id, role_id) SELECT u.id, 2 FROM tb_user u WHERE u.email='noc@helpdesk.com';

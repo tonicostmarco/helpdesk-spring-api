@@ -12,23 +12,19 @@ import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.*;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
-import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.*;
-import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.*;
-
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.LOW;
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.OPEN;
 
 
 
@@ -172,26 +168,33 @@ public class TicketService {
     @Transactional
     public TicketMinDTO patch(Long id, TicketPatchDTO dto) {
 
-        Ticket ticket = ticketRepository.getReferenceById(id);
+        try {
+            Ticket ticket = ticketRepository.getReferenceById(id);
 
-       if (dto.getStatus() != null && dto.getStatus() != ticket.getStatus()) {
-           ticket.setUpdatedAt(Instant.now());
-           ticket.setStatus(dto.getStatus());
-       }
-       else {
-           throw new BusinessException("Wasn't able to change");
-       }
+            if (dto.getStatus() != null && dto.getStatus() != ticket.getStatus()) {
+                ticket.setUpdatedAt(Instant.now());
+                ticket.setStatus(dto.getStatus());
+            } else {
+                throw new BusinessException("Wasn't able to change");
+            }
 
 
+            ticket = ticketRepository.save(ticket);
 
-       ticket = ticketRepository.save(ticket);
+            messageSender.sendSms(
+                    new MessageRequest(userAuthService.getMe().getName(),
+                            ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
+                            "Your ticket has been updated. "), "Status: " + dto.getStatus());
 
-        messageSender.sendSms(
-                new MessageRequest(userAuthService.getMe().getName(),
-                19, ticketRepository.getReferenceById(id).getClient().getPhone(),
-                "Your ticket has been updated. "), "Status: " + dto.getStatus());
 
-        return new TicketMinDTO(ticket);
+            return new TicketMinDTO(ticket);
+        }
+        catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundException("Ticket ID not found");
+        }
+        catch (RuntimeException e) {
+            throw new MessageException("Wasn't able to deliver the message");
+        }
     }
 
 

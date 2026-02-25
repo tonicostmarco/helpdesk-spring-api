@@ -106,9 +106,6 @@ public class UserService {
 
     }
 
-
-
-
     @Transactional
     public UserDTO update(Long id, UserInputDTO dto) {
 
@@ -129,7 +126,6 @@ public class UserService {
 
     }
 
-
     @Transactional
     public void delete(Long id) {
 
@@ -149,6 +145,7 @@ public class UserService {
         user.setId(dto.getId());
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
+        user.setDdd(dto.getDdd());
         user.setPhone(dto.getPhone());
         dto.setPassword(serverConfig.passwordEncoder().encode(dto.getPassword()));
         }

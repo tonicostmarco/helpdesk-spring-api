@@ -2,10 +2,7 @@ package com.helpdeskspringapi.helpdesk.controller.handlers;
 
 import com.helpdeskspringapi.helpdesk.dtos.error.CustomError;
 import com.helpdeskspringapi.helpdesk.dtos.error.ValidationError;
-import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
-import com.helpdeskspringapi.helpdesk.exceptions.ForbiddenException;
-import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
-import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
+import com.helpdeskspringapi.helpdesk.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,6 +71,26 @@ public class ControllerExceptionHandler {
     public ResponseEntity<CustomError> forbidden(ForbiddenException e, HttpServletRequest request) {
 
         HttpStatus status = HttpStatus.FORBIDDEN;
+
+        CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<CustomError> business(BusinessException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(status).body(error);
+    }
+
+    @ExceptionHandler(MessageException.class)
+    public ResponseEntity<CustomError> message(BusinessException e, HttpServletRequest request) {
+
+        HttpStatus status = HttpStatus.SERVICE_UNAVAILABLE;
 
         CustomError error = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
 

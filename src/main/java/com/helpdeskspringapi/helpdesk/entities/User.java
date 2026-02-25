@@ -17,6 +17,8 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String email;
+
+    private Integer ddd;
     private String phone;
     private String password;
 
@@ -32,9 +34,10 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(Long id, String name, String phone, String email, String password, Set<Role> roles) {
+    public User(Long id, String name, Integer ddd, String phone, String email, String password, Set<Role> roles) {
         this.id = id;
         this.name = name;
+        this.ddd = ddd;
         this.phone = phone;
         this.email = email;
         this.password = password;
@@ -45,32 +48,48 @@ public class User implements UserDetails {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 
     public String getEmail() {
         return email;
     }
 
+    public Integer getDdd() {
+        return ddd;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setDdd(Integer ddd) {
+        this.ddd = ddd;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public void addRole(Role role) {
@@ -85,6 +104,7 @@ public class User implements UserDetails {
         }
         return false;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
@@ -117,14 +137,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
     }
 
     @Override
