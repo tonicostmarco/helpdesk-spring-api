@@ -216,7 +216,7 @@ public class TicketService {
             messageSender.sendSms(
                     new MessageRequest("SYSTEM",
                             ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                            "Your ticket has been updated. Priority: " + dto.getStatus()));
+                            "Your ticket has been updated. Priority: " + dto.getPriority()));
 
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
