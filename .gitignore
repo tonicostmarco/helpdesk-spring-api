@@ -1,4 +1,6 @@
 src/main/resources/application-local.properties
+.env
+.data
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar

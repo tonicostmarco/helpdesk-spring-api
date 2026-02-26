@@ -101,8 +101,6 @@ public class TicketController {
 
     }
 
-    //adicionar patch para o usuario cancelar o chamado se ele quiser
-
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @PatchMapping(value = "/{id}/status")
     public ResponseEntity<TicketMinDTO> changeStatus(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
