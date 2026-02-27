@@ -2,6 +2,9 @@ package com.helpdeskspringapi.helpdesk.controller;
 
 import com.helpdeskspringapi.helpdesk.dtos.twillio.MessageRequest;
 import com.helpdeskspringapi.helpdesk.services.MessageSender;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +18,18 @@ public class MessageController {
     @Autowired
     private MessageSender sender;
 
+    @Operation(
+            description = "Message sender",
+            summary = "Send custom message to an user by using Twilio",
+            responses = {
+                    @ApiResponse(description = "Created", responseCode = "201"),
+                    @ApiResponse(description = "Bad Request", responseCode = "400"),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
+                    @ApiResponse(description = "Forbidden", responseCode = "403"),
+                    @ApiResponse(description = "Unprocessable Entity", responseCode = "422")
+            }
+    )
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/send-message")
     public ResponseEntity<Void> sender(@RequestBody MessageRequest request) {
         sender.sendSms(request);

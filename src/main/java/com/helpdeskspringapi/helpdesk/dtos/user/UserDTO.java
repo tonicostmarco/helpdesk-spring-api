@@ -2,6 +2,7 @@ package com.helpdeskspringapi.helpdesk.dtos.user;
 
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,14 +12,22 @@ import java.util.Set;
 
 public class UserDTO {
 
+    @Schema(description = "User id", example = "1")
     private Long id;
+
+    @Schema(description = "Username", example = "marco123")
     private String name;
 
+    @Schema(description = "User e-mail", example = "marco@email.com", format = "email")
     private String email;
 
+    @Schema(description = "DDD (2 digits)", example = "11", minimum = "0", maximum = "99")
     private Integer ddd;
+
+    @Schema(description = "Phone number (without DDD)", example = "998877665")
     private String phone;
 
+    @Schema(description = "User roles")
     private Set<RoleMinDTO> roles = new HashSet<>();
 
     public UserDTO(Long id, String name, String email, Integer ddd, String phone, Set<RoleMinDTO> roles) {

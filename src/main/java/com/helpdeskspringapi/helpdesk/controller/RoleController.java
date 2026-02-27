@@ -4,6 +4,9 @@ import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
 import com.helpdeskspringapi.helpdesk.services.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,18 @@ public class RoleController {
     @Autowired
     private RoleService service;
 
+    @Operation(
+            description = "Find a Role by id",
+            summary = "Get a role by id",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Bad Request", responseCode = "400"),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
+                    @ApiResponse(description = "Forbidden", responseCode = "403"),
+                    @ApiResponse(description = "Not Found", responseCode = "404")
+            }
+    )
+    @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<RoleDTO> findById(@PathVariable Long id) {
@@ -34,6 +49,16 @@ public class RoleController {
 
     }
 
+    @Operation(
+            description = "Find all Roles",
+            summary = "Get all roles",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Bad Request", responseCode = "400"),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
+                    @ApiResponse(description = "Forbidden", responseCode = "403")
+            }
+    )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<RoleMinDTO>> findAll() {
@@ -44,6 +69,16 @@ public class RoleController {
 
     }
 
+    @Operation(
+            description = "Find all Roles including users",
+            summary = "Get all roles with user data",
+            responses = {
+                    @ApiResponse(description = "Success", responseCode = "200"),
+                    @ApiResponse(description = "Bad Request", responseCode = "400"),
+                    @ApiResponse(description = "Unauthorized", responseCode = "401"),
+                    @ApiResponse(description = "Forbidden", responseCode = "403")
+            }
+    )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/searchusers")
     public ResponseEntity<List<RoleDTO>> findAllWithUsers() {

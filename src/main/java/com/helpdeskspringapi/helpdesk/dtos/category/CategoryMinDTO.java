@@ -1,11 +1,17 @@
 package com.helpdeskspringapi.helpdesk.dtos.category;
 
 import com.helpdeskspringapi.helpdesk.entities.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class CategoryMinDTO {
 
+    @Schema(description = "Category id", example = "3")
     private Long id;
+
+    @Schema(description = "Category name", example = "Connectivity")
     private String name;
+
+    @Schema(description = "Category description", example = "Issues related to internet, link and signal")
     private String description;
 
     public CategoryMinDTO(Long id, String name, String description) {

@@ -1,9 +1,12 @@
 package com.helpdeskspringapi.helpdesk.dtos.role;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.security.core.GrantedAuthority;
 
 public class RoleMinDTO {
 
+
+    @Schema(description = "Role authority", example = "ROLE_SUPPORT")
     private String authority;
 
     public RoleMinDTO(String authority) {

@@ -2,10 +2,14 @@ package com.helpdeskspringapi.helpdesk.dtos.ticket;
 
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority;
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class TicketPatchDTO {
 
+    @Schema(description = "New ticket status", example = "IN_PROGRESS")
     private TicketStatus status;
+
+    @Schema(description = "New ticket priority", example = "HIGH")
     private TicketPriority priority;
 
     public TicketPatchDTO(TicketPriority priority) {

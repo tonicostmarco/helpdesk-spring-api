@@ -6,6 +6,7 @@ import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority;
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -13,19 +14,31 @@ import java.util.Set;
 
 public class TicketDTO {
 
+    @Schema(description = "Ticket id", example = "10")
     private Long id;
 
+    @Schema(description = "Ticket title", example = "Internet down")
     private String title;
+
+    @Schema(description = "Ticket description", example = "Customer reports no connectivity since morning")
     private String description;
 
+    @Schema(description = "Ticket creation instant (UTC)", example = "2026-02-27T21:05:10Z", format = "date-time")
     private Instant createdAt;
+
+    @Schema(description = "Ticket last update instant (UTC)", example = "2026-02-27T22:10:00Z", format = "date-time")
     private Instant updatedAt;
 
+    @Schema(description = "Ticket priority", example = "MEDIUM")
     private TicketPriority priority;
+
+    @Schema(description = "Ticket status", example = "OPEN")
     private TicketStatus status;
 
+    @Schema(description = "Ticket client (entity)", implementation = User.class)
     private User client;
 
+    @Schema(description = "Ticket categories (minimal)")
     private Set<CategoryMinDTO> categories = new HashSet<>();
 
     public TicketDTO() {

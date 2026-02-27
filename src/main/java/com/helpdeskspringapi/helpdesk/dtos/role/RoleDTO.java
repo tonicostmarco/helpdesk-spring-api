@@ -3,15 +3,20 @@ package com.helpdeskspringapi.helpdesk.dtos.role;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class RoleDTO {
 
+    @Schema(description = "Role id", example = "1")
     private Long id;
+
+    @Schema(description = "Role authority", example = "ROLE_ADMIN")
     private String authority;
 
+    @Schema(description = "Users that have this role (minimal)")
     private Set<UserMinDTO> users = new HashSet<>();
 
     public RoleDTO() {

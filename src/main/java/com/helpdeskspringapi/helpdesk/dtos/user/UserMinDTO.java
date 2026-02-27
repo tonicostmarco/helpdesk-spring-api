@@ -1,10 +1,14 @@
 package com.helpdeskspringapi.helpdesk.dtos.user;
 
 import com.helpdeskspringapi.helpdesk.entities.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public class UserMinDTO {
 
+    @Schema(description = "User id", example = "1")
     private Long id;
+
+    @Schema(description = "Username", example = "marco123")
     private String name;
 
     public UserMinDTO(Long id, String name) {
