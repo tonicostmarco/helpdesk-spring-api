@@ -41,8 +41,7 @@ public class Ticket {
     public Ticket() {
     }
 
-    public Ticket(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client) {
-        this.id = id;
+    public Ticket(String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client) {
         this.title = title;
         this.description = description;
         this.createdAt = createdAt;

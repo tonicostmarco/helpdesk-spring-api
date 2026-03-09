@@ -44,7 +44,7 @@ public class TicketDTO {
     public TicketDTO() {
     }
 
-    public TicketDTO(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client, Set<CategoryMinDTO> categories) {
+    public TicketDTO(Long id, String title, String description, Instant createdAt, Instant updatedAt, TicketPriority priority, TicketStatus status, User client) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -53,7 +53,6 @@ public class TicketDTO {
         this.priority = priority;
         this.status = status;
         this.client = client;
-        this.categories = categories;
     }
 
     public TicketDTO(Ticket ticket) {

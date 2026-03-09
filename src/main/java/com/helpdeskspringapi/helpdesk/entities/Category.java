@@ -24,8 +24,7 @@ public class Category {
     public Category() {
     }
 
-    public Category(Long id, String name, String description, Set<Ticket> categoryTickets) {
-        this.id = id;
+    public Category(String name, String description) {
         this.name = name;
         this.description = description;
     }
@@ -56,6 +55,12 @@ public class Category {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void addTickets(Ticket ticket) {
+
+        categoryTickets.add(ticket);
+
     }
 
     @Override
