@@ -48,6 +48,16 @@ public class TicketController {
 
     }
 
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<TicketMinDTO> findMe(@PathVariable Long id) {
+
+        TicketMinDTO dto = service.findById(id);
+
+        return ResponseEntity.ok(dto);
+
+    }
+
     @Operation(
             description = "Find all Tickets with pagination",
             summary = "Get all tickets with pagination",

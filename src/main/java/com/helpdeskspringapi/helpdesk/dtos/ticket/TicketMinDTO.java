@@ -29,6 +29,10 @@ public class TicketMinDTO {
     @Schema(description = "Ticket priority", example = "MEDIUM")
     private TicketPriority priority;
 
+    public TicketMinDTO() {
+
+    }
+
     public TicketMinDTO(Long id, String title, User client, TicketStatus status, TicketPriority priority, Instant createdAt) {
         this.id = id;
         this.title = title;

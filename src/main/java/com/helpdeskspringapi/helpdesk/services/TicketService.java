@@ -49,6 +49,15 @@ public class TicketService {
     public TicketMinDTO findById(Long id) {
 
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        return new TicketMinDTO(ticket);
+
+    }
+
+    @Transactional(readOnly = true)
+    public TicketMinDTO findMe(Long id) {
+
+        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
         authService.selfOrAdmin(ticket.getClient().getId());
 
         return new TicketMinDTO(ticket);
@@ -114,7 +123,7 @@ public class TicketService {
     @Transactional
     public TicketMinDTO insert(TicketInputDTO dto) {
 
-        User me = userAuthService.authenticated();
+      //  User me = userAuthService.authenticated();
 
         Set<Long> dtos = dto.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
 
@@ -128,21 +137,15 @@ public class TicketService {
         ticket.getCategories().clear();
         ticket.getCategories().addAll(categories);
 
-        ticket.setTitle(dto.getTitle());
-        ticket.setDescription(dto.getDescription());
-        ticket.setPriority(LOW);
-        ticket.setStatus(OPEN);
-        ticket.setCreatedAt(Instant.now());
-        ticket.setUpdatedAt(Instant.EPOCH);
-        ticket.setClient(me);
+        copyDTOtoEntity(dto, ticket);
 
         ticket = ticketRepository.save(ticket);
-
+    /*
         messageSender.sendSms(
                 new MessageRequest(userAuthService.getMe().getName(),
                         me.getDdd(), me.getPhone(),
                         "Your ticket has been created. Status: " + ticket.getStatus()));
-
+*/
         return new TicketMinDTO(ticket);
 
     }
@@ -173,7 +176,7 @@ public class TicketService {
 
     @Transactional
     public TicketMinDTO patchStatus(Long id, TicketPatchDTO dto) {
-           try {
+        try {
             Ticket ticket = ticketRepository.getReferenceById(id);
 
             if (dto.getStatus() != null && dto.getStatus() != ticket.getStatus()) {
@@ -243,6 +246,18 @@ public class TicketService {
         } catch (DatabaseException e) {
             throw new DatabaseException("Referential integrity failure");
         }
+
+    }
+
+    public void copyDTOtoEntity(TicketInputDTO dto, Ticket ticket) {
+        User me = userAuthService.authenticated();
+        ticket.setTitle(dto.getTitle());
+        ticket.setDescription(dto.getDescription());
+        ticket.setPriority(LOW);
+        ticket.setStatus(OPEN);
+        ticket.setCreatedAt(Instant.now());
+        ticket.setUpdatedAt(Instant.EPOCH);
+        ticket.setClient(me);
 
     }
 

@@ -8,15 +8,12 @@ public class CategoryFactory {
     public static Category createCategory() {
 
         Category category = new Category("DNS", "Sites nao abrem por nome, mas abrem por IP, ou nslookup falha.");
-
+        category.setId(1L);
         return category;
     }
 
     public static CategoryDTO createCategoryDTO() {
-
-        CategoryDTO dto = new CategoryDTO(createCategory());
-
-        return dto;
+        return new CategoryDTO(createCategory());
     }
 
 }

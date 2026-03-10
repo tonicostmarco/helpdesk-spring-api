@@ -34,6 +34,7 @@ public class TicketFactory {
                         Set.of(new Role(1L, "ROLE_ADMIN"))
                 )
         );
+        ticket.setId(1L);
 
         Category category = CategoryFactory.createCategory();
 
@@ -50,7 +51,9 @@ public class TicketFactory {
 
     public static TicketMinDTO createTicketMinDTO() {
 
-        return new TicketMinDTO(createTicket());
+        TicketMinDTO minDTO = new TicketMinDTO(createTicket());
+
+        return minDTO;
 
     }
 
