@@ -1,11 +1,11 @@
 package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
-import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
+import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.factory.CategoryFactory;
 import com.helpdeskspringapi.helpdesk.factory.TicketFactory;
@@ -24,13 +24,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class TicketServiceTest {
@@ -40,37 +43,42 @@ public class TicketServiceTest {
 
     private Long existingId;
     private Long nonExistingId;
-    Set<Long> ids;
-    Set<Long> wrongIds;
+    private Set<Long> ids;
+    private Set<Long> wrongIds;
     private String expectedTitle;
     private String nonExistingTitle;
     private String expectedCategory;
     private String nonExistingCategory;
 
     private Ticket ticket;
-    private TicketDTO dto;
     private TicketMinDTO minDTO;
-    private List<TicketMinDTO> listMinDTO = new ArrayList<>();
     private TicketInputDTO inputDTO;
-    private Category cat;
-    private CategoryDTO categoryDTO;
-    List<Category> categories = new ArrayList<>();
+    private List<TicketMinDTO> listMinDTO;
+    private List<Category> categories;
 
-    PageImpl<Ticket> page;
-    PageImpl<TicketMinDTO> pageMin;
-    Pageable pageable;
-
-    @Mock
-    private TicketRepository repository;
+    private PageImpl<Ticket> page;
+    private PageImpl<TicketMinDTO> pageMin;
+    private Pageable pageable;
 
     @Mock
-    private CategoryRepository catRepository;
+    private TicketRepository ticketRepository;
+
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private UserAuthService userAuthService;
+
+    @Mock
+    private AuthService authService;
+
+    @Mock
+    private MessageSender messageSender;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
 
         existingId = 1L;
-
         nonExistingId = 100L;
         expectedTitle = "Internet cai do nada";
         nonExistingTitle = "nonExistingTitle";
@@ -78,38 +86,40 @@ public class TicketServiceTest {
         nonExistingCategory = "nonExistingCategory";
 
         ticket = TicketFactory.createTicket();
-        dto = TicketFactory.createTicketDTO();
         minDTO = TicketFactory.createTicketMinDTO();
         inputDTO = TicketFactory.createTicketInputDTO();
-        listMinDTO.add(minDTO);
 
-        cat = CategoryFactory.createCategory();
-        categoryDTO = CategoryFactory.createCategoryDTO();
+        listMinDTO = List.of(minDTO);
+
+        Category cat = CategoryFactory.createCategory();
+        categories = List.of(cat);
 
         page = new PageImpl<>(List.of(ticket));
         pageMin = new PageImpl<>(List.of(minDTO));
         pageable = PageRequest.of(0, 10);
 
         ids = inputDTO.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
-
         wrongIds = inputDTO.getCategories().stream().map(x -> x.getId() + 7L).collect(Collectors.toSet());
 
-        when(repository.findById(existingId)).thenReturn(Optional.of(ticket));
-        when(repository.findById(nonExistingId)).thenReturn(Optional.empty());
+        when(ticketRepository.findById(existingId)).thenReturn(Optional.of(ticket));
+        when(ticketRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
-        when(repository.findByTitleContainingIgnoreCase(pageable, expectedTitle)).thenReturn(pageMin);
-        doThrow(ResourceNotFoundException.class).when(repository).findByTitleContainingIgnoreCase(pageable, nonExistingTitle);
+        when(ticketRepository.findByTitleContainingIgnoreCase(pageable, expectedTitle)).thenReturn(pageMin);
+        when(ticketRepository.findByTitleContainingIgnoreCase(pageable, nonExistingTitle)).thenThrow(ResourceNotFoundException.class);
 
-        when(repository.findByCategoryContainingIgnoreCase(expectedCategory)).thenReturn(listMinDTO);
-        doThrow(ResourceNotFoundException.class).when(repository).findByCategoryContainingIgnoreCase(nonExistingCategory);
+        when(ticketRepository.findByCategoryContainingIgnoreCase(expectedCategory)).thenReturn(listMinDTO);
+        when(ticketRepository.findByCategoryContainingIgnoreCase(nonExistingCategory)).thenThrow(ResourceNotFoundException.class);
 
-        when(catRepository.findAllById(ids)).thenReturn(categories);
-        doThrow(ResourceNotFoundException.class).when(catRepository).findAllById(wrongIds);
+        when(categoryRepository.findAllById(ids)).thenReturn(categories);
+        when(categoryRepository.findAllById(wrongIds)).thenReturn(List.of());
 
-        when(repository.findAll(pageable)).thenReturn(page);
-        when(repository.findAllWithUsers(pageable)).thenReturn(pageMin);
-        when(repository.findAllOldestFirst(pageable)).thenReturn(pageMin);
+        when(ticketRepository.findAll(pageable)).thenReturn(page);
+        when(ticketRepository.findAllWithUsers(pageable)).thenReturn(pageMin);
+        when(ticketRepository.findAllOldestFirst(pageable)).thenReturn(pageMin);
+        when(ticketRepository.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        User authenticatedUser = ticket.getClient();
+        when(userAuthService.authenticated()).thenReturn(authenticatedUser);
     }
 
     @Test
@@ -119,17 +129,14 @@ public class TicketServiceTest {
 
         Assertions.assertNotNull(minDTO);
         Assertions.assertEquals(existingId, minDTO.getId());
-        verify(repository).findById(existingId);
-
+        verify(ticketRepository).findById(existingId);
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionTicketWhenIdDoesNotExist() {
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            service.findById(nonExistingId);
-        });
-        verify(repository).findById(nonExistingId);
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findById(nonExistingId));
+        verify(ticketRepository).findById(nonExistingId);
     }
 
     @Test
@@ -138,8 +145,7 @@ public class TicketServiceTest {
         Page<TicketMinDTO> tickets = service.findAll(pageable);
 
         Assertions.assertNotNull(tickets);
-        verify(repository).findAll(pageable);
-
+        verify(ticketRepository).findAll(pageable);
     }
 
     @Test
@@ -148,9 +154,9 @@ public class TicketServiceTest {
         Page<TicketMinDTO> tickets = service.findAllWithUsers(pageable);
 
         Assertions.assertNotNull(tickets);
-        Assertions.assertNotNull(tickets.get().map(TicketMinDTO::getClient));
-        verify(repository).findAllWithUsers(pageable);
-
+        Assertions.assertFalse(tickets.isEmpty());
+        Assertions.assertNotNull(tickets.getContent().get(0).getClient());
+        verify(ticketRepository).findAllWithUsers(pageable);
     }
 
     @Test
@@ -159,19 +165,16 @@ public class TicketServiceTest {
         Page<TicketMinDTO> tickets = service.findByTitle(pageable, expectedTitle);
 
         Assertions.assertNotNull(tickets);
-        Assertions.assertNotNull(tickets.get().map(TicketMinDTO::getTitle));
-        Assertions.assertEquals(expectedTitle, minDTO.getTitle());
-        verify(repository).findByTitleContainingIgnoreCase(pageable, expectedTitle);
-
+        Assertions.assertFalse(tickets.isEmpty());
+        Assertions.assertEquals(expectedTitle, tickets.getContent().get(0).getTitle());
+        verify(ticketRepository).findByTitleContainingIgnoreCase(pageable, expectedTitle);
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionWhenTitleDoesNotExist() {
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            service.findByTitle(pageable, nonExistingTitle);
-            verify(repository).findByTitleContainingIgnoreCase(pageable, expectedTitle);
-        });
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByTitle(pageable, nonExistingTitle));
+        verify(ticketRepository).findByTitleContainingIgnoreCase(pageable, nonExistingTitle);
     }
 
     @Test
@@ -180,17 +183,14 @@ public class TicketServiceTest {
         List<TicketMinDTO> tickets = service.findByCategory(expectedCategory);
 
         Assertions.assertNotNull(tickets);
-        verify(repository).findByCategoryContainingIgnoreCase(expectedCategory);
-
+        verify(ticketRepository).findByCategoryContainingIgnoreCase(expectedCategory);
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionWhenCategoryDoesNotExist() {
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            service.findByCategory(nonExistingCategory);
-            verify(repository).findByCategoryContainingIgnoreCase(expectedCategory);
-        });
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByCategory(nonExistingCategory));
+        verify(ticketRepository).findByCategoryContainingIgnoreCase(nonExistingCategory);
     }
 
     @Test
@@ -203,37 +203,37 @@ public class TicketServiceTest {
         Assertions.assertFalse(tickets.isEmpty());
 
         for (int i = 1; i < gettingOldest.size(); i++) {
-
             Instant anterior = gettingOldest.get(i - 1).getCreatedAt();
             Instant atual = gettingOldest.get(i).getCreatedAt();
-
-            Assertions.assertTrue(anterior.isAfter(atual));
-
+            Assertions.assertFalse(anterior.isAfter(atual));
         }
 
-        verify(repository).findAllOldestFirst(pageable);
-
+        verify(ticketRepository).findAllOldestFirst(pageable);
     }
 
     @Test
-    public void shouldInsertNewTicketWhenCorrectData()  {
+    public void shouldInsertNewTicketWhenCorrectData() {
 
-        categoryDTO.setId(1L);
         TicketMinDTO localDTO = service.insert(inputDTO);
+
         Assertions.assertNotNull(localDTO);
-
-        verify(service).insert(inputDTO);
-
+        Assertions.assertEquals(inputDTO.getTitle(), localDTO.getTitle());
+        verify(categoryRepository).findAllById(ids);
+        verify(ticketRepository, times(1)).save(any(Ticket.class));
     }
 
     @Test
-    public void shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories()  {
+    public void shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories() {
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-            service.insert(inputDTO);
-            verify(service).insert(inputDTO);
-        });
+        inputDTO.setCategories(inputDTO.getCategories().stream().map(category -> {
+            CategoryDTO wrongCategory = new CategoryDTO();
+            wrongCategory.setId(category.getId() + 7L);
+            wrongCategory.setName(category.getName());
+            return wrongCategory;
+        }).collect(Collectors.toSet()));
 
-
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.insert(inputDTO));
+        verify(categoryRepository).findAllById(wrongIds);
+        verify(ticketRepository, never()).save(any(Ticket.class));
     }
 }
