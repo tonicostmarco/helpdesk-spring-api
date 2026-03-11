@@ -1,6 +1,7 @@
 package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
@@ -30,10 +31,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 public class TicketServiceTest {
@@ -51,6 +49,7 @@ public class TicketServiceTest {
     private String nonExistingCategory;
 
     private Ticket ticket;
+    private TicketDTO ticketDTO;
     private TicketMinDTO minDTO;
     private TicketInputDTO inputDTO;
     private List<TicketMinDTO> listMinDTO;
@@ -86,6 +85,7 @@ public class TicketServiceTest {
         nonExistingCategory = "nonExistingCategory";
 
         ticket = TicketFactory.createTicket();
+        ticketDTO = TicketFactory.createTicketDTO();
         minDTO = TicketFactory.createTicketMinDTO();
         inputDTO = TicketFactory.createTicketInputDTO();
 
@@ -116,7 +116,10 @@ public class TicketServiceTest {
         when(ticketRepository.findAll(pageable)).thenReturn(page);
         when(ticketRepository.findAllWithUsers(pageable)).thenReturn(pageMin);
         when(ticketRepository.findAllOldestFirst(pageable)).thenReturn(pageMin);
+
         when(ticketRepository.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(ticketRepository.getReferenceById(existingId)).thenReturn(ticket);
+        when(ticketRepository.getReferenceById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 
         User authenticatedUser = ticket.getClient();
         when(userAuthService.authenticated()).thenReturn(authenticatedUser);
@@ -234,6 +237,25 @@ public class TicketServiceTest {
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.insert(inputDTO));
         verify(categoryRepository).findAllById(wrongIds);
+        verify(ticketRepository, never()).save(any(Ticket.class));
+    }
+
+    @Test
+    public void shouldUpdateTicketWhenCorrectData() {
+
+        TicketMinDTO localDTO = service.update(existingId, ticketDTO);
+
+        Assertions.assertNotNull(localDTO);
+        Assertions.assertEquals(ticketDTO.getTitle(), localDTO.getTitle());
+        verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(ticketRepository, times(1)).getReferenceById(existingId);
+    }
+
+    @Test
+    public void shouldThrowResourceNotFoundExceptionInUpdateMethodWhenWrongId() {
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.update(nonExistingId, ticketDTO));
+        verify(categoryRepository).getReferenceById(nonExistingId);
         verify(ticketRepository, never()).save(any(Ticket.class));
     }
 }

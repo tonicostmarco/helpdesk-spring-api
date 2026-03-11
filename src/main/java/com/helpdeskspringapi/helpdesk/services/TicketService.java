@@ -123,7 +123,7 @@ public class TicketService {
     @Transactional
     public TicketMinDTO insert(TicketInputDTO dto) {
 
-      //  User me = userAuthService.authenticated();
+      User me = userAuthService.authenticated();
 
         Set<Long> dtos = dto.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
 
@@ -140,7 +140,7 @@ public class TicketService {
         copyDTOtoEntity(dto, ticket);
 
         ticket = ticketRepository.save(ticket);
-    /*
+ /*
         messageSender.sendSms(
                 new MessageRequest(userAuthService.getMe().getName(),
                         me.getDdd(), me.getPhone(),
@@ -160,11 +160,13 @@ public class TicketService {
             ticket.setUpdatedAt(Instant.now());
 
             ticket = ticketRepository.save(ticket);
+
+            /*
             messageSender.sendSms(
                     new MessageRequest(userAuthService.getMe().getName(),
                             ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
                             "Your ticket has been updated. Status: " + dto.getStatus()));
-
+*/
             return new TicketMinDTO(ticket);
 
         } catch (ResourceNotFoundException e) {
