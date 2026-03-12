@@ -69,13 +69,5 @@ public class UserAuthService implements UserDetailsService {
 
     }
 
-    @Transactional(readOnly = true)
-    protected User getMeU() {
-
-        return authenticated();
-
-
-    }
-
 
 }
