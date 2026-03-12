@@ -38,7 +38,7 @@ public class TicketController {
                     @ApiResponse(description = "Not Found", responseCode = "404")
             }
     )
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_CLIENT')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id) {
 
@@ -48,11 +48,11 @@ public class TicketController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_CLIENT')")
-    @GetMapping(value = "/me")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_CLIENT')")
+    @GetMapping(value = "/me/{id}")
     public ResponseEntity<TicketMinDTO> findMe(@PathVariable Long id) {
 
-        TicketMinDTO dto = service.findById(id);
+        TicketMinDTO dto = service.findMe(id);
 
         return ResponseEntity.ok(dto);
 
