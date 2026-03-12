@@ -140,12 +140,12 @@ public class TicketService {
         copyDTOtoEntity(dto, ticket);
 
         ticket = ticketRepository.save(ticket);
- /*
+
         messageSender.sendSms(
                 new MessageRequest(userAuthService.getMe().getName(),
                         me.getDdd(), me.getPhone(),
                         "Your ticket has been created. Status: " + ticket.getStatus()));
-*/
+
         return new TicketMinDTO(ticket);
 
     }
@@ -161,12 +161,12 @@ public class TicketService {
 
             ticket = ticketRepository.save(ticket);
 
-            /*
+
             messageSender.sendSms(
                     new MessageRequest(userAuthService.getMe().getName(),
                             ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
                             "Your ticket has been updated. Status: " + dto.getStatus()));
-*/
+
             return new TicketMinDTO(ticket);
 
         } catch (ResourceNotFoundException e) {
@@ -198,8 +198,6 @@ public class TicketService {
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
-        } catch (RuntimeException e) {
-            throw new MessageException("Wasn't able to deliver the message");
         }
     }
 
@@ -226,8 +224,6 @@ public class TicketService {
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
-        } catch (RuntimeException e) {
-            throw new MessageException("Wasn't able to deliver the message");
         }
     }
 

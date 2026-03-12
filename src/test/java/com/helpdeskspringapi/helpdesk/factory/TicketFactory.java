@@ -4,6 +4,7 @@ import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
@@ -68,6 +69,16 @@ public class TicketFactory {
         CategoryDTO catDTO = CategoryFactory.createCategoryDTO();
 
         dto.getCategories().add(catDTO);
+
+        return dto;
+    }
+
+    public static TicketPatchDTO createTicketPatchDTO() {
+
+        TicketPatchDTO dto = new TicketPatchDTO();
+
+        dto.setPriority(TicketPriority.LOW);
+        dto.setStatus(TicketStatus.CLOSED);
 
         return dto;
     }

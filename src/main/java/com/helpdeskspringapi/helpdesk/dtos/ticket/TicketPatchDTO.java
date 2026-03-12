@@ -12,8 +12,8 @@ public class TicketPatchDTO {
     @Schema(description = "New ticket priority", example = "HIGH")
     private TicketPriority priority;
 
-    public TicketPatchDTO(TicketPriority priority) {
-        this.priority = priority;
+    public TicketPatchDTO() {
+
     }
 
     public TicketStatus getStatus() {

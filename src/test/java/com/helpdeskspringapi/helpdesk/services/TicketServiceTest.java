@@ -4,9 +4,15 @@ import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
+import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
+import com.helpdeskspringapi.helpdesk.dtos.twillio.MessageRequest;
+import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
 import com.helpdeskspringapi.helpdesk.entities.User;
+import com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority;
+import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
+import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
 import com.helpdeskspringapi.helpdesk.factory.CategoryFactory;
 import com.helpdeskspringapi.helpdesk.factory.TicketFactory;
@@ -41,6 +47,7 @@ public class TicketServiceTest {
 
     private Long existingId;
     private Long nonExistingId;
+    private Long dependentId;
     private Set<Long> ids;
     private Set<Long> wrongIds;
     private String expectedTitle;
@@ -52,6 +59,7 @@ public class TicketServiceTest {
     private TicketDTO ticketDTO;
     private TicketMinDTO minDTO;
     private TicketInputDTO inputDTO;
+    private TicketPatchDTO patchDTO;
     private List<TicketMinDTO> listMinDTO;
     private List<Category> categories;
 
@@ -88,6 +96,7 @@ public class TicketServiceTest {
         ticketDTO = TicketFactory.createTicketDTO();
         minDTO = TicketFactory.createTicketMinDTO();
         inputDTO = TicketFactory.createTicketInputDTO();
+        patchDTO = TicketFactory.createTicketPatchDTO();
 
         listMinDTO = List.of(minDTO);
 
@@ -123,6 +132,12 @@ public class TicketServiceTest {
 
         User authenticatedUser = ticket.getClient();
         when(userAuthService.authenticated()).thenReturn(authenticatedUser);
+        when(userAuthService.getMe()).thenReturn(new UserDTO(ticket.getClient()));
+
+        doNothing().when(ticketRepository).deleteById(existingId);
+        when(ticketRepository.existsById(existingId)).thenReturn(true);
+        when(ticketRepository.existsById(nonExistingId)).thenReturn(false);
+
     }
 
     @Test
@@ -247,15 +262,94 @@ public class TicketServiceTest {
 
         Assertions.assertNotNull(localDTO);
         Assertions.assertEquals(ticketDTO.getTitle(), localDTO.getTitle());
+        verify(ticketRepository, times(3)).getReferenceById(existingId);
         verify(ticketRepository, times(1)).save(any(Ticket.class));
-        verify(ticketRepository, times(1)).getReferenceById(existingId);
+
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionInUpdateMethodWhenWrongId() {
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.update(nonExistingId, ticketDTO));
-        verify(categoryRepository).getReferenceById(nonExistingId);
+        verify(ticketRepository).getReferenceById(nonExistingId);
         verify(ticketRepository, never()).save(any(Ticket.class));
     }
+
+    @Test
+    public void shouldUpdateStatusWhenCorrectIdAndData() {
+
+        TicketMinDTO localDTO = service.patchStatus(existingId, patchDTO);
+
+        verify(ticketRepository, times(3)).getReferenceById(existingId);
+        verify(ticketRepository, times(1)).save(any(Ticket.class));
+    }
+
+    @Test
+    public void shouldThrowBusinessExceptionInPatchStatusWhenInvalidStatus() {
+
+        patchDTO.setStatus(TicketStatus.IN_PROGRESS);
+        ticket.setStatus(TicketStatus.IN_PROGRESS);
+
+        Assertions.assertThrows(BusinessException.class, () -> service.patchStatus(existingId, patchDTO));
+        verify(ticketRepository).getReferenceById(existingId);
+        verify(ticketRepository, never()).save(any(Ticket.class));
+    }
+
+    @Test
+    public void shouldThrowResourceNotFoundExceptionInPatchStatusWhenIdDoesNotExist() {
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.patchStatus(nonExistingId, patchDTO));
+        verify(ticketRepository).getReferenceById(nonExistingId);
+        verify(ticketRepository, never()).save(any(Ticket.class));
+    }
+
+    @Test
+    public void shouldThrowBusinessExceptionInPatchPriorityWhenInvalidStatus() {
+
+        patchDTO.setPriority(TicketPriority.LOW);
+        ticket.setPriority(TicketPriority.LOW);
+
+        Assertions.assertThrows(BusinessException.class, () -> service.patchPriority(existingId, patchDTO));
+        verify(ticketRepository).getReferenceById(existingId);
+        verify(ticketRepository, never()).save(any(Ticket.class));
+    }
+
+    @Test
+    public void shouldThrowresourceNotFoundExceptionInPatchPriorityWhenIdDoesNotExist() {
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.patchPriority(nonExistingId, patchDTO));
+        verify(ticketRepository).getReferenceById(nonExistingId);
+        verify(ticketRepository, never()).save(any(Ticket.class));
+    }
+
+    @Test
+    public void shouldDeleteTicketWhenIdExistsAndTicketIsClosed() {
+        ticket.setStatus(TicketStatus.CLOSED);
+        service.delete(existingId);
+        verify(ticketRepository).deleteById(existingId);
+    }
+    @Test
+    public void shouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.delete(nonExistingId));
+        verify(ticketRepository, never()).deleteById(nonExistingId);
+
+    }
+
+    @Test
+    public void shouldThrowBusinessExceptionWhenStatusIsNotClosed() {
+
+        Assertions.assertThrows(BusinessException.class, () -> service.delete(existingId));
+        verify(ticketRepository, never()).deleteById(existingId);
+
+    }
+
+    @Test
+    public void shouldThrowDataIntegrityExceptionWhenDependentId() {
+
+        Assertions.assertThrows(BusinessException.class, () -> service.delete(existingId));
+        verify(ticketRepository, never()).deleteById(existingId);
+
+    }
+
 }

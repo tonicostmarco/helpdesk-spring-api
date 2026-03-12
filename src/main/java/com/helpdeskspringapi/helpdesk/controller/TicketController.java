@@ -49,7 +49,7 @@ public class TicketController {
     }
 
     @PreAuthorize("hasRole('ROLE_CLIENT')")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/me")
     public ResponseEntity<TicketMinDTO> findMe(@PathVariable Long id) {
 
         TicketMinDTO dto = service.findById(id);
