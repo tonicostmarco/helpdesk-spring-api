@@ -18,7 +18,15 @@ public class AuthService {
         if (!me.hasRole("ROLE_ADMIN") && !me.getId().equals(id)) {
             throw new ForbiddenException("Access denied");
         }
+    }
 
+    public void selfOrAllowed(Long id) {
+
+        User me = service.authenticated();
+
+        if (!me.hasRole("ROLE_ADMIN") && !me.hasRole("ROLE_SUPPORT") && !me.hasRole("ROLE_NOC") && !me.getId().equals(id)) {
+            throw new ForbiddenException("Access denied");
+        }
     }
 
 }
