@@ -49,6 +49,7 @@ public class TicketService {
     public TicketMinDTO findById(Long id) {
 
         Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+        authService.selfOrAllowed(ticket.getClient().getId());
 
         return new TicketMinDTO(ticket);
 
@@ -123,7 +124,7 @@ public class TicketService {
     @Transactional
     public TicketMinDTO insert(TicketInputDTO dto) {
 
-      User me = userAuthService.authenticated();
+        User me = userAuthService.authenticated();
 
         Set<Long> dtos = dto.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
 
@@ -141,10 +142,18 @@ public class TicketService {
 
         ticket = ticketRepository.save(ticket);
 
-        messageSender.sendSms(
-                new MessageRequest(userAuthService.getMe().getName(),
-                        me.getDdd(), me.getPhone(),
-                        "Your ticket has been created. Status: " + ticket.getStatus()));
+        try {
+            messageSender.sendSms(
+                    new MessageRequest(
+                            me.getName(),
+                            me.getDdd(),
+                            me.getPhone(),
+                            "Your ticket has been created. Status: " + ticket.getStatus()
+                    )
+            );
+        } catch (Exception e) {
+            System.out.println("Erro ao enviar SMS: " + e.getMessage());
+        }
 
         return new TicketMinDTO(ticket);
 
@@ -225,6 +234,7 @@ public class TicketService {
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
         }
+
     }
 
 
