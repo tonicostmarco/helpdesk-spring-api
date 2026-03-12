@@ -38,7 +38,7 @@ public class TicketController {
                     @ApiResponse(description = "Not Found", responseCode = "404")
             }
     )
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT', 'ROLE_CLIENT')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id) {
 
