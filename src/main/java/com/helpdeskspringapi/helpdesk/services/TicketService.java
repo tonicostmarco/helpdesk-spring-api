@@ -115,12 +115,16 @@ public class TicketService {
         if (category.isBlank()) {
             throw new InvalidParameterException("Category required");
         }
-
-        try {
-            return ticketRepository.findByCategoryContainingIgnoreCase(category);
-        } catch (ResourceNotFoundException e) {
+        if (!ticketRepository.existsByCategoriesName(category)) {
             throw new ResourceNotFoundException("Ticket category not found");
         }
+        try {
+            return ticketRepository.findByCategory(category);
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException("Access denied");
+        }
+
+
     }
 
     @Transactional(readOnly = true)
