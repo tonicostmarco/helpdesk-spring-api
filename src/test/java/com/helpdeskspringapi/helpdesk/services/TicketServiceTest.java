@@ -258,7 +258,7 @@ public class TicketServiceTest {
     @Test
     public void shouldUpdateTicketWhenCorrectData() {
 
-        TicketMinDTO localDTO = service.update(existingId, ticketDTO);
+        TicketMinDTO localDTO = service.update(existingId, patchDTO);
 
         Assertions.assertNotNull(localDTO);
         Assertions.assertEquals(ticketDTO.getTitle(), localDTO.getTitle());
@@ -270,7 +270,7 @@ public class TicketServiceTest {
     @Test
     public void shouldThrowResourceNotFoundExceptionInUpdateMethodWhenWrongId() {
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.update(nonExistingId, ticketDTO));
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.update(nonExistingId, patchDTO));
         verify(ticketRepository).getReferenceById(nonExistingId);
         verify(ticketRepository, never()).save(any(Ticket.class));
     }

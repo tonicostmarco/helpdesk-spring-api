@@ -160,7 +160,7 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketMinDTO update(Long id, TicketDTO dto) {
+    public TicketMinDTO update(Long id, TicketPatchDTO dto) {
         try {
 
             Ticket ticket = ticketRepository.getReferenceById(id);
