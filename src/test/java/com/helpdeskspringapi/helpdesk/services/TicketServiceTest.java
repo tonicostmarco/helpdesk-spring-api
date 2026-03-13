@@ -202,14 +202,17 @@ public class TicketServiceTest {
         List<TicketMinDTO> tickets = service.findByCategory(expectedCategory);
 
         Assertions.assertNotNull(tickets);
-        verify(ticketRepository).findByCategoryContainingIgnoreCase(expectedCategory);
+        verify(ticketRepository).findByCategory(expectedCategory);
+        verify(ticketRepository).existsByCategoriesName(expectedCategory);
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionWhenCategoryDoesNotExist() {
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByCategory(nonExistingCategory));
-        verify(ticketRepository).findByCategoryContainingIgnoreCase(nonExistingCategory);
+        
+        verify(ticketRepository, never()).findByCategory(nonExistingCategory);
+        verify(ticketRepository, times(1)).existsByCategoriesName(nonExistingCategory);
     }
 
     @Test

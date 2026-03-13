@@ -28,11 +28,10 @@ import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -97,6 +96,10 @@ public class TicketControllerTest {
 
         when(service.insert(any(TicketInputDTO.class))).thenReturn(minDTO);
         when(service.update(eq(existingId), any(TicketPatchDTO.class))).thenReturn(minDTO);
+        when(service.patchStatus(eq(existingId), any(TicketPatchDTO.class))).thenReturn(minDTO);
+        when(service.patchPriority(eq(existingId), any(TicketPatchDTO.class))).thenReturn(minDTO);
+
+        doNothing().when(service).delete(existingId);
 
     }
 
@@ -130,7 +133,7 @@ public class TicketControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void findByIdShouldReturnNothingWhenTicketIdExists() throws Exception {
+    public void findByIdShouldReturnNothingWhenIdDoesNotExists() throws Exception {
 
         ResultActions result = mockMvc.perform(get("/tickets/{id}", nonExistingId)
                 .accept(MediaType.APPLICATION_JSON));
@@ -183,9 +186,9 @@ public class TicketControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void shouldUpdateStatusWhenCorrectIdAndData() throws Exception {
 
-        String jsonBody = objectMapper.writeValueAsString(ticketDTO);
+        String jsonBody = objectMapper.writeValueAsString(patchDTO);
 
-        ResultActions result = mockMvc.perform(put("/tickets/{id}", existingId).with(csrf())
+        ResultActions result = mockMvc.perform(patch("/tickets/{id}/status", existingId).with(csrf())
                 .content(jsonBody)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON));
@@ -199,4 +202,32 @@ public class TicketControllerTest {
         result.andExpect(jsonPath("$.createdAt").exists());
     }
 
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldUpdatePriorityWhenCorrectIdAndData() throws Exception {
+
+        String jsonBody = objectMapper.writeValueAsString(patchDTO);
+
+        ResultActions result = mockMvc.perform(patch("/tickets/{id}/priority", existingId).with(csrf())
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.id").exists());
+        result.andExpect(jsonPath("$.title").exists());
+        result.andExpect(jsonPath("$.client").exists());
+        result.andExpect(jsonPath("$.status").exists());
+        result.andExpect(jsonPath("$.priority").exists());
+        result.andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldDeleteTicketWhenIdExists() throws Exception {
+
+        ResultActions result = mockMvc.perform(delete("/tickets/{id}", existingId).with(csrf()));
+
+        result.andExpect(status().isNoContent());
+    }
 }

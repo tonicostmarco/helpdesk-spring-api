@@ -52,9 +52,7 @@ public class TicketFactory {
 
     public static TicketMinDTO createTicketMinDTO() {
 
-        TicketMinDTO minDTO = new TicketMinDTO(createTicket());
-
-        return minDTO;
+        return new TicketMinDTO(createTicket());
 
     }
 
