@@ -111,7 +111,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
     @GetMapping("/searchtitle")
     public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title) {
 
@@ -197,7 +197,7 @@ public class TicketController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @PutMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<TicketMinDTO> update(@PathVariable Long id, @Valid @RequestBody TicketDTO dto) {
+    public ResponseEntity<TicketMinDTO> update(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
 
         TicketMinDTO updated = service.update(id, dto);
 
