@@ -16,7 +16,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.priority, obj.createdAt) " +
             "FROM Ticket obj " +
             "WHERE UPPER(obj.title) LIKE UPPER(CONCAT('%', :title, '%'))")
-    Page<TicketMinDTO> findByTitleContainingIgnoreCase(Pageable pageable, @Param("title") String title);
+    List<TicketMinDTO> findByTitleContainingIgnoreCase(@Param("title") String title);
 
     @Query(value = "SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.priority, obj.createdAt) " +
             "FROM Ticket obj " +
@@ -29,12 +29,14 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.priority, obj.createdAt) " +
             "FROM Ticket obj " +
             "JOIN obj.categories cat " +
-            "WHERE UPPER(cat.name) = UPPER(:category)")
-    List<TicketMinDTO> findByCategoryContainingIgnoreCase(@Param("category") String category);
+            "WHERE UPPER(cat.name) LIKE UPPER(CONCAT('%', :category, '%'))")
+    List<TicketMinDTO> findByCategory(@Param("category") String category);
 
     @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO(obj.id, obj.title, obj.client, obj.status, obj.priority, obj.createdAt) " +
             "FROM Ticket obj " +
             "ORDER BY obj.createdAt ASC")
     Page<TicketMinDTO> findAllOldestFirst(Pageable pageable);
 
+    boolean existsByTitle(String title);
+    boolean existsByCategoriesName(String category);
 }

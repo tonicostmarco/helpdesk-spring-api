@@ -163,6 +163,26 @@ public class TicketControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void shouldUpdateTicketWhenCorrectIdAndData() throws Exception {
 
+        String jsonBody = objectMapper.writeValueAsString(patchDTO);
+
+        ResultActions result = mockMvc.perform(put("/tickets/{id}", existingId).with(csrf())
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
+        result.andExpect(jsonPath("$.id").exists());
+        result.andExpect(jsonPath("$.title").exists());
+        result.andExpect(jsonPath("$.client").exists());
+        result.andExpect(jsonPath("$.status").exists());
+        result.andExpect(jsonPath("$.priority").exists());
+        result.andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldUpdateStatusWhenCorrectIdAndData() throws Exception {
+
         String jsonBody = objectMapper.writeValueAsString(ticketDTO);
 
         ResultActions result = mockMvc.perform(put("/tickets/{id}", existingId).with(csrf())

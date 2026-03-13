@@ -1,7 +1,6 @@
 package com.helpdeskspringapi.helpdesk.services;
 
 import com.helpdeskspringapi.helpdesk.dtos.category.CategoryDTO;
-import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
@@ -24,7 +23,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.LOW;
-import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.*;
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.CLOSED;
+import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.OPEN;
 
 
 @Service
@@ -48,55 +48,64 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {
 
-        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
-        authService.selfOrAllowed(ticket.getClient().getId());
+        try {
+            Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+            authService.selfOrAllowed(ticket.getClient().getId());
+            return new TicketMinDTO(ticket);
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException("Access denied");
+        }
 
-        return new TicketMinDTO(ticket);
 
     }
 
     @Transactional(readOnly = true)
     public TicketMinDTO findMe(Long id) {
+        try {
+            Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+            authService.selfOrAllowed(ticket.getClient().getId());
 
-        Ticket ticket = ticketRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
-        authService.selfOrAdmin(ticket.getClient().getId());
-
-        return new TicketMinDTO(ticket);
-
+            return new TicketMinDTO(ticket);
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException("Access denied");
+        }
     }
 
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findAll(Pageable pageable) {
-
         try {
+
             Page<Ticket> ticket = ticketRepository.findAll(pageable);
             return ticket.map(TicketMinDTO::new);
+
         } catch (ForbiddenException e) {
             throw new ForbiddenException("Access denied");
         }
-
     }
 
     @Transactional(readOnly = true)
     public Page<TicketMinDTO> findAllWithUsers(Pageable pageable) {
-
-        return ticketRepository.findAllWithUsers(pageable);
-
+        try {
+            return ticketRepository.findAllWithUsers(pageable);
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException("Access denied");
+        }
     }
 
 
     @Transactional(readOnly = true)
-    public Page<TicketMinDTO> findByTitle(Pageable pageable, String title) {
+    public List<TicketMinDTO> findByTitle(String title) {
 
         if (title.isBlank()) {
             throw new InvalidParameterException("Title required");
         }
-        try {
-
-            return ticketRepository.findByTitleContainingIgnoreCase(pageable, title);
-
-        } catch (ResourceNotFoundException e) {
+        if (ticketRepository.existsByTitle(title)) {
             throw new ResourceNotFoundException("Ticket title not found");
+        }
+        try {
+            return ticketRepository.findByTitleContainingIgnoreCase(title);
+        } catch (ForbiddenException e) {
+            throw new ForbiddenException("Access denied");
         }
     }
 

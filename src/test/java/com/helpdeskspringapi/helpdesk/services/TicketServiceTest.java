@@ -47,7 +47,6 @@ public class TicketServiceTest {
 
     private Long existingId;
     private Long nonExistingId;
-    private Long dependentId;
     private Set<Long> ids;
     private Set<Long> wrongIds;
     private String expectedTitle;
@@ -113,11 +112,13 @@ public class TicketServiceTest {
         when(ticketRepository.findById(existingId)).thenReturn(Optional.of(ticket));
         when(ticketRepository.findById(nonExistingId)).thenReturn(Optional.empty());
 
-        when(ticketRepository.findByTitleContainingIgnoreCase(pageable, expectedTitle)).thenReturn(pageMin);
-        when(ticketRepository.findByTitleContainingIgnoreCase(pageable, nonExistingTitle)).thenThrow(ResourceNotFoundException.class);
+        when(ticketRepository.findByTitleContainingIgnoreCase(expectedTitle)).thenReturn(listMinDTO);
+        when(ticketRepository.findByTitleContainingIgnoreCase(nonExistingTitle)).thenThrow(ResourceNotFoundException.class);
 
-        when(ticketRepository.findByCategoryContainingIgnoreCase(expectedCategory)).thenReturn(listMinDTO);
-        when(ticketRepository.findByCategoryContainingIgnoreCase(nonExistingCategory)).thenThrow(ResourceNotFoundException.class);
+        when(ticketRepository.findByCategory(expectedCategory)).thenReturn(listMinDTO);
+        doThrow(ResourceNotFoundException.class).when(ticketRepository).findByCategory(nonExistingCategory);
+        when(ticketRepository.existsByCategoriesName(expectedCategory)).thenReturn(true);
+        when(ticketRepository.existsByCategoriesName(nonExistingCategory)).thenReturn(false);
 
         when(categoryRepository.findAllById(ids)).thenReturn(categories);
         when(categoryRepository.findAllById(wrongIds)).thenReturn(List.of());
@@ -180,19 +181,19 @@ public class TicketServiceTest {
     @Test
     public void shouldReturnTicketByTitle() {
 
-        Page<TicketMinDTO> tickets = service.findByTitle(pageable, expectedTitle);
+        List<TicketMinDTO> tickets = service.findByTitle(expectedTitle);
 
         Assertions.assertNotNull(tickets);
         Assertions.assertFalse(tickets.isEmpty());
-        Assertions.assertEquals(expectedTitle, tickets.getContent().get(0).getTitle());
-        verify(ticketRepository).findByTitleContainingIgnoreCase(pageable, expectedTitle);
+        Assertions.assertEquals(expectedTitle, tickets.getFirst().getTitle());
+        verify(ticketRepository).findByTitleContainingIgnoreCase(expectedTitle);
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionWhenTitleDoesNotExist() {
 
-        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByTitle(pageable, nonExistingTitle));
-        verify(ticketRepository).findByTitleContainingIgnoreCase(pageable, nonExistingTitle);
+        Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByTitle(nonExistingTitle));
+        verify(ticketRepository).findByTitleContainingIgnoreCase(nonExistingTitle);
     }
 
     @Test
@@ -328,6 +329,7 @@ public class TicketServiceTest {
         service.delete(existingId);
         verify(ticketRepository).deleteById(existingId);
     }
+
     @Test
     public void shouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
 

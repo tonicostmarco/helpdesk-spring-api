@@ -58,16 +58,16 @@ public class TicketRepositoryTest {
    }
 
     @Test
-    public void shouldReturnTicketMinDTOWhenFindByTitleContainingIgnoreCaseExists() {
+    public void shouldReturnListOfTicketMinDTOWhenFindByTitleContainingIgnoreCaseExists() {
 
-        Page<TicketMinDTO> ticketByTitle = repository.findByTitleContainingIgnoreCase(pageable, "Internet cai do nada");
+        List<TicketMinDTO> ticketByTitle = repository.findByTitleContainingIgnoreCase("Internet cai do nada");
         Assertions.assertNotNull(ticketByTitle);
    }
 
     @Test
     public void shouldReturnEmptyWhenFindByTitleContainingIgnoreCaseDoesNotExist() {
 
-            Page<TicketMinDTO> ticketByTitle = repository.findByTitleContainingIgnoreCase(pageable, "NonExistingTitle");
+            List<TicketMinDTO> ticketByTitle = repository.findByTitleContainingIgnoreCase("NonExistingTitle");
             Assertions.assertTrue(ticketByTitle.isEmpty());
 
     }
@@ -84,14 +84,14 @@ public class TicketRepositoryTest {
     @Test
     public void shouldReturnTicketMinDTOWhenFindByCategoryContainingIgnoreCaseExists() {
 
-        List<TicketMinDTO> ticketByCategory = repository.findByCategoryContainingIgnoreCase("DNS");
+        List<TicketMinDTO> ticketByCategory = repository.findByCategory("DNS");
         Assertions.assertNotNull(ticketByCategory);
     }
 
     @Test
     public void shouldReturnEmptyWhenFindByCategoryContainingIgnoreCaseDoesNotExist() {
 
-        List<TicketMinDTO> ticketByCategory = repository.findByCategoryContainingIgnoreCase("NonExistingCategory");
+        List<TicketMinDTO> ticketByCategory = repository.findByCategory("NonExistingCategory");
         Assertions.assertTrue(ticketByCategory.isEmpty());
 
     }

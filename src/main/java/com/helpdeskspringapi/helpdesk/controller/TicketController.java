@@ -113,9 +113,9 @@ public class TicketController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
     @GetMapping("/searchtitle")
-    public ResponseEntity<Page<TicketMinDTO>> findByTitle(Pageable pageable, @Valid @RequestParam String title) {
+    public ResponseEntity<List<TicketMinDTO>> findByTitle(@Valid @RequestParam String title) {
 
-        return ResponseEntity.ok(service.findByTitle(pageable, title));
+        return ResponseEntity.ok(service.findByTitle(title));
 
     }
 
