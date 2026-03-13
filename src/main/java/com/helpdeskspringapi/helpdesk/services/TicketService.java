@@ -183,11 +183,14 @@ public class TicketService {
 
             ticket = ticketRepository.save(ticket);
 
-
-            messageSender.sendSms(
-                    new MessageRequest(userAuthService.getMe().getName(),
-                            ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                            "Your ticket has been updated. Status: " + dto.getStatus()));
+            try {
+                messageSender.sendSms(
+                        new MessageRequest(userAuthService.getMe().getName(),
+                                ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
+                                "Your ticket has been updated. Status: " + dto.getStatus()));
+            } catch (Exception e) {
+                System.out.println("Erro ao enviar SMS: " + e.getMessage());
+            }
 
             return new TicketMinDTO(ticket);
 
@@ -211,12 +214,14 @@ public class TicketService {
             }
 
             ticket = ticketRepository.save(ticket);
-
-            messageSender.sendSms(
-                    new MessageRequest(userAuthService.getMe().getName(),
-                            ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                            "Your ticket has been updated. Status: " + dto.getStatus()));
-
+            try {
+                messageSender.sendSms(
+                        new MessageRequest(userAuthService.getMe().getName(),
+                                ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
+                                "Your ticket has been updated. Status: " + dto.getStatus()));
+            } catch (Exception e) {
+                System.out.println("Erro ao enviar SMS: " + e.getMessage());
+            }
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
@@ -237,12 +242,14 @@ public class TicketService {
             }
 
             ticket = ticketRepository.save(ticket);
-
-            messageSender.sendSms(
-                    new MessageRequest("SYSTEM",
-                            ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                            "Your ticket has been updated. Priority: " + dto.getPriority()));
-
+            try {
+                messageSender.sendSms(
+                        new MessageRequest("SYSTEM",
+                                ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
+                                "Your ticket has been updated. Priority: " + dto.getPriority()));
+            } catch (ResourceNotFoundException e) {
+                throw new ResourceNotFoundException("Ticket ID not found");
+            }
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
