@@ -7,9 +7,7 @@ import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
-import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
-import com.helpdeskspringapi.helpdesk.factory.CategoryFactory;
 import com.helpdeskspringapi.helpdesk.factory.TicketFactory;
 import com.helpdeskspringapi.helpdesk.services.TicketService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,15 +23,18 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+import java.util.Set;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.List;
-import java.util.Set;
 
 @WebMvcTest(TicketController.class)
 public class TicketControllerTest {
@@ -94,7 +95,8 @@ public class TicketControllerTest {
         when(service.findById(existingId)).thenReturn(minDTO);
         when(service.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 
-        when(service.insert(inputDTO)).thenReturn(minDTO);
+        when(service.insert(any(TicketInputDTO.class))).thenReturn(minDTO);
+        when(service.update(eq(existingId), any(TicketPatchDTO.class))).thenReturn(minDTO);
 
     }
 
@@ -149,6 +151,26 @@ public class TicketControllerTest {
                 .accept(MediaType.APPLICATION_JSON));
 
         result.andExpect(status().isCreated());
+        result.andExpect(jsonPath("$.id").exists());
+        result.andExpect(jsonPath("$.title").exists());
+        result.andExpect(jsonPath("$.client").exists());
+        result.andExpect(jsonPath("$.status").exists());
+        result.andExpect(jsonPath("$.priority").exists());
+        result.andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void shouldUpdateTicketWhenCorrectIdAndData() throws Exception {
+
+        String jsonBody = objectMapper.writeValueAsString(ticketDTO);
+
+        ResultActions result = mockMvc.perform(put("/tickets/{id}", existingId).with(csrf())
+                .content(jsonBody)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON));
+
+        result.andExpect(status().isOk());
         result.andExpect(jsonPath("$.id").exists());
         result.andExpect(jsonPath("$.title").exists());
         result.andExpect(jsonPath("$.client").exists());
