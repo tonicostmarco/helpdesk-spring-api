@@ -130,7 +130,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
     @GetMapping("/searchcategory")
     public ResponseEntity<List<TicketMinDTO>> findByCategory(@Valid @RequestParam String category) {
 
@@ -149,7 +149,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
     @GetMapping("/byoldest")
     public ResponseEntity<Page<TicketMinDTO>> findOldestFirst(Pageable pageable) {
 
