@@ -166,19 +166,12 @@ public class TicketService {
         copyDTOtoEntity(dto, ticket);
 
         ticket = ticketRepository.save(ticket);
-
-        try {
-            messageSender.sendSms(
-                    new MessageRequest(
-                            me.getName(),
-                            me.getDdd(),
-                            me.getPhone(),
-                            "Your ticket has been created. Status: " + ticket.getStatus()
-                    )
-            );
-        } catch (Exception e) {
-            System.out.println("Erro ao enviar SMS: " + e.getMessage());
-        }
+        sendTicketSms(
+                me.getName(),
+                me.getDdd(),
+                me.getPhone(),
+                "Your ticket has been created. Status: " + ticket.getStatus()
+        );
 
         return new TicketMinDTO(ticket);
 
@@ -194,15 +187,12 @@ public class TicketService {
             ticket.setUpdatedAt(Instant.now());
 
             ticket = ticketRepository.save(ticket);
-
-            try {
-                messageSender.sendSms(
-                        new MessageRequest(userAuthService.getMe().getName(),
-                                ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                                "Your ticket has been updated. Status: " + dto.getStatus()));
-            } catch (Exception e) {
-                System.out.println("Erro ao enviar SMS: " + e.getMessage());
-            }
+            sendTicketSms(
+                    userAuthService.getMe().getName(),
+                    ticket.getClient().getDdd(),
+                    ticket.getClient().getPhone(),
+                    "Your ticket status has been updated. Status: " + dto.getStatus()
+            );
 
             return new TicketMinDTO(ticket);
 
@@ -226,14 +216,13 @@ public class TicketService {
             }
 
             ticket = ticketRepository.save(ticket);
-            try {
-                messageSender.sendSms(
-                        new MessageRequest(userAuthService.getMe().getName(),
-                                ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                                "Your ticket has been updated. Status: " + dto.getStatus()));
-            } catch (Exception e) {
-                System.out.println("Erro ao enviar SMS: " + e.getMessage());
-            }
+            sendTicketSms(
+                    userAuthService.getMe().getName(),
+                    ticket.getClient().getDdd(),
+                    ticket.getClient().getPhone(),
+                    "Your ticket status has been updated. Status: " + dto.getStatus()
+            );
+
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
@@ -254,14 +243,14 @@ public class TicketService {
             }
 
             ticket = ticketRepository.save(ticket);
-            try {
-                messageSender.sendSms(
-                        new MessageRequest("SYSTEM",
-                                ticketRepository.getReferenceById(id).getClient().getDdd(), ticketRepository.getReferenceById(id).getClient().getPhone(),
-                                "Your ticket has been updated. Priority: " + dto.getPriority()));
-            } catch (ResourceNotFoundException e) {
-                throw new ResourceNotFoundException("Ticket ID not found");
-            }
+
+            sendTicketSms(
+                    userAuthService.getMe().getName(),
+                    ticket.getClient().getDdd(),
+                    ticket.getClient().getPhone(),
+                    "Your ticket has been updated. Priority: " + dto.getPriority()
+            );
+
             return new TicketMinDTO(ticket);
         } catch (ResourceNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
@@ -295,10 +284,18 @@ public class TicketService {
         ticket.setDescription(dto.getDescription());
         ticket.setPriority(LOW);
         ticket.setStatus(OPEN);
-        ticket.setCreatedAt(Instant.now());
-        ticket.setUpdatedAt(Instant.EPOCH);
+        ticket.setCreatedAt(now());
+        ticket.setUpdatedAt(EPOCH);
         ticket.setClient(me);
 
+    }
+
+    private void sendTicketSms(String senderName, Integer ddd, String phone, String message) {
+        try {
+            messageSender.sendSms(new MessageRequest(senderName, ddd, phone, message));
+        } catch (Exception e) {
+            throw new MessageException("Error on sending message: " + e.getMessage());
+        }
     }
 
 }
