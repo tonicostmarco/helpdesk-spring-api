@@ -105,10 +105,13 @@ public class UserService {
 
         user = userRepository.save(user);
 
-        messageSender.sendSms(
-                new MessageRequest(userAuthService.getMe().getName(),
-                        dto.getDdd(), dto.getPhone(),
-                        "Your account has been created! Welcome, " + dto.getName() + "!" + "Your login is your email and your password"));
+        sendUserSms(userAuthService.getMe().getName(),
+                dto.getDdd(),
+                dto.getPhone(),
+                "Your account has been created! Welcome, "
+                        + dto.getName() + "!"
+                        + "Your login is your email and your password");
+
 
         return new UserDTO(user);
 
@@ -122,6 +125,11 @@ public class UserService {
 
             copyDtoToEntity(dto, user);
             user = userRepository.save(user);
+
+            sendUserSms(userAuthService.getMe().getName(),
+                    dto.getDdd(),
+                    dto.getPhone(),
+                    "Your account has been updated! Check it out.");
 
             return new UserDTO(user);
         } catch (ResourceNotFoundException e) {
@@ -155,6 +163,14 @@ public class UserService {
         user.setPassword(serverConfig.passwordEncoder().encode(dto.getPassword()));
     }
 
+
+    private void sendUserSms(String senderName, Integer ddd, String phone, String message) {
+        try {
+            messageSender.sendSms(new MessageRequest(senderName, ddd, phone, message));
+        } catch (Exception e) {
+            throw new MessageException("Error on sending message: " + e.getMessage());
+        }
+    }
 
 }
 
