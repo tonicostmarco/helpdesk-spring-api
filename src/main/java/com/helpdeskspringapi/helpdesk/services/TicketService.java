@@ -105,11 +105,17 @@ public class TicketService {
         if (title.isBlank()) {
             throw new InvalidParameterException("Title required");
         }
-        if (ticketRepository.existsByTitle(title)) {
-            throw new ResourceNotFoundException("Ticket title not found");
-        }
+
         try {
-            return ticketRepository.findByTitleContainingIgnoreCase(title);
+
+            List<TicketMinDTO> result = ticketRepository.findByTitleContainingIgnoreCase(title);
+
+            if (result.isEmpty()) {
+                throw new ResourceNotFoundException("Ticket title not found");
+            }
+
+            return result;
+
         } catch (ForbiddenException e) {
             throw new ForbiddenException("Access denied");
         }
