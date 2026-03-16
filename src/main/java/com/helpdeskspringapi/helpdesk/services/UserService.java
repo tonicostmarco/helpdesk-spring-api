@@ -7,10 +7,7 @@ import com.helpdeskspringapi.helpdesk.dtos.user.UserInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.entities.User;
-import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
-import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
-import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
-import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
+import com.helpdeskspringapi.helpdesk.exceptions.*;
 import com.helpdeskspringapi.helpdesk.repositories.RoleRepository;
 import com.helpdeskspringapi.helpdesk.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +24,21 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final AuthService authService;
+    private final AuthorizationServerConfig serverConfig;
+    private final MessageSender messageSender;
+    private final UserAuthService userAuthService;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
-    private AuthorizationServerConfig serverConfig;
-
-    @Autowired
-    private MessageSender messageSender;
-
-    @Autowired
-    private UserAuthService userAuthService;
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, AuthService authService, AuthorizationServerConfig serverConfig, MessageSender messageSender, UserAuthService userAuthService) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.authService = authService;
+        this.serverConfig = serverConfig;
+        this.messageSender = messageSender;
+        this.userAuthService = userAuthService;
+    }
 
     @Transactional(readOnly = true)
     public UserMinDTO findById(Long id) {

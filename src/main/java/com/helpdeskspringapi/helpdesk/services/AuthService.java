@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserAuthService service;
+
+    private final UserAuthService service;
+
+    public AuthService(UserAuthService service) {
+        this.service = service;
+    }
 
     public void selfOrAdmin(Long id) {
 

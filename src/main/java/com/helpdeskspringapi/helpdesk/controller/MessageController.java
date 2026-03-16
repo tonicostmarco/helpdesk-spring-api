@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MessageController {
 
-    @Autowired
-    private MessageSender sender;
+
+    private final MessageSender sender;
+
+    public MessageController(MessageSender sender) {
+        this.sender = sender;
+    }
 
     @Operation(
             description = "Message sender",

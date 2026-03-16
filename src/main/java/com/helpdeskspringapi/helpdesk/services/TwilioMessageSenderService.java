@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TwilioMessageSenderService implements MessageSender {
 
-    @Autowired
     public final TwilioConfig config;
 
     public TwilioMessageSenderService(TwilioConfig config) {

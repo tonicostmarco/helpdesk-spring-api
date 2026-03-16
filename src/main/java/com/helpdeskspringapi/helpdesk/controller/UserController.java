@@ -18,17 +18,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
 
-    @Autowired
-    private UserService service;
+    private final UserService service;
+    private final UserAuthService authService;
 
-    @Autowired
-    private UserAuthService authService;
+    public UserController(UserService service, UserAuthService authService) {
+        this.service = service;
+        this.authService = authService;
+    }
 
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")

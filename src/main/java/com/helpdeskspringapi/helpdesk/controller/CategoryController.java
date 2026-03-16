@@ -21,8 +21,12 @@ import java.util.List;
 @RequestMapping(value = "/categories")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService service;
+
+    private final CategoryService service;
+
+    public CategoryController(CategoryService service) {
+        this.service = service;
+    }
 
     @Operation(
             description = "Find a Category by id",

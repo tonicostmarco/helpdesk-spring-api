@@ -22,11 +22,13 @@ import java.util.stream.Collectors;
 @Service
 public class RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final RoleRepository roleRepository;;
+
+    public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+
+    }
 
     @Transactional(readOnly = true)
     public RoleDTO findById(Long id) {

@@ -24,8 +24,12 @@ import java.util.List;
 @RequestMapping(value = "/tickets")
 public class TicketController {
 
-    @Autowired
-    private TicketService service;
+
+    private final TicketService service;
+
+    public TicketController(TicketService service) {
+        this.service = service;
+    }
 
     @Operation(
             description = "Find a Ticket by id",

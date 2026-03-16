@@ -42,8 +42,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 public class TicketServiceTest {
 
-    @InjectMocks
-    private TicketService service;
+
 
     private Long existingId;
     private Long nonExistingId;
@@ -81,8 +80,18 @@ public class TicketServiceTest {
     @Mock
     private MessageSender messageSender;
 
+    private TicketService service;
+
     @BeforeEach
     void setUp() {
+
+        service = new TicketService(
+                ticketRepository,
+                categoryRepository,
+                authService,
+                userAuthService,
+                messageSender
+        );
 
         existingId = 1L;
         nonExistingId = 100L;
@@ -186,6 +195,7 @@ public class TicketServiceTest {
         Assertions.assertNotNull(tickets);
         Assertions.assertFalse(tickets.isEmpty());
         Assertions.assertEquals(expectedTitle, tickets.getFirst().getTitle());
+
         verify(ticketRepository).findByTitleContainingIgnoreCase(expectedTitle);
     }
 

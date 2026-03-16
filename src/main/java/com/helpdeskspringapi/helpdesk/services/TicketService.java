@@ -11,7 +11,6 @@ import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.*;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,25 +24,32 @@ import java.util.stream.Collectors;
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority.LOW;
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.CLOSED;
 import static com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus.OPEN;
+import static java.time.Instant.EPOCH;
+import static java.time.Instant.now;
 
 
 @Service
 public class TicketService {
 
-    @Autowired
-    private TicketRepository ticketRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final TicketRepository ticketRepository;
+    private final CategoryRepository categoryRepository;
+    private final AuthService authService;
+    private final UserAuthService userAuthService;
+    private final MessageSender messageSender;
 
-    @Autowired
-    private AuthService authService;
+    public TicketService(TicketRepository ticketRepository,
+                         CategoryRepository categoryRepository,
+                         AuthService authService,
+                         UserAuthService userAuthService,
+                         MessageSender messageSender) {
 
-    @Autowired
-    private UserAuthService userAuthService;
-
-    @Autowired
-    private MessageSender messageSender;
+        this.ticketRepository = ticketRepository;
+        this.categoryRepository = categoryRepository;
+        this.authService = authService;
+        this.userAuthService = userAuthService;
+        this.messageSender = messageSender;
+    }
 
     @Transactional(readOnly = true)
     public TicketMinDTO findById(Long id) {

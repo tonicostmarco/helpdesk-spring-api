@@ -24,8 +24,12 @@ import java.util.Set;
 public class RoleController {
 
 
-    @Autowired
-    private RoleService service;
+
+    private final RoleService service;
+
+    public RoleController(RoleService service) {
+        this.service = service;
+    }
 
     @Operation(
             description = "Find a Role by id",
