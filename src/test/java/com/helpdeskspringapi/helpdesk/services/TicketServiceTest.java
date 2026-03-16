@@ -276,7 +276,7 @@ public class TicketServiceTest {
 
         Assertions.assertNotNull(localDTO);
         Assertions.assertEquals(ticketDTO.getTitle(), localDTO.getTitle());
-        verify(ticketRepository, times(3)).getReferenceById(existingId);
+        verify(ticketRepository, times(1)).getReferenceById(existingId);
         verify(ticketRepository, times(1)).save(any(Ticket.class));
 
     }
@@ -294,7 +294,7 @@ public class TicketServiceTest {
 
         TicketMinDTO localDTO = service.patchStatus(existingId, patchDTO);
 
-        verify(ticketRepository, times(3)).getReferenceById(existingId);
+        verify(ticketRepository, times(1)).getReferenceById(existingId);
         verify(ticketRepository, times(1)).save(any(Ticket.class));
     }
 
