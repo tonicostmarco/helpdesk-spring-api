@@ -76,9 +76,9 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/searchroles")
-    public ResponseEntity<Page<UserMinDTO>> findAllWithRoles(Pageable pageable) {
+    public ResponseEntity<List<UserMinDTO>> findAllWithRoles() {
 
-        Page<UserMinDTO> dto = service.findAllWithRoles(pageable);
+        List<UserMinDTO> dto = service.findAllWithRoles();
 
         return ResponseEntity.ok(dto);
 

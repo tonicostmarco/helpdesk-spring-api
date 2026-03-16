@@ -75,12 +75,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UserMinDTO> findAllWithRoles(Pageable pageable) {
+    public List<UserMinDTO> findAllWithRoles() {
 
-        Page<User> page = userRepository.findAll(pageable);
-        userRepository.findUserWithRoles(page.stream().collect(Collectors.toSet()));
+        List<User> list = userRepository.findAll();
 
-        return page.map(UserMinDTO::new);
+        return userRepository.findUserWithRoles(list);
 
     }
 

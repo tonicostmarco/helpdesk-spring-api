@@ -11,8 +11,10 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    @Query("SELECT new com.helpdeskspringapi.helpdesk.dtos.user.UserMinDTO(obj.id, obj.name) " +
+
+    @Query("SELECT DISTINCT obj " +
             "FROM User obj " +
+            "JOIN FETCH obj.roles " +
             "WHERE UPPER(obj.name) LIKE UPPER(CONCAT(:name, '%'))")
     Set<UserMinDTO> findByName(String name);
 
@@ -20,7 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "FROM User obj " +
             "JOIN FETCH obj.roles " +
             "WHERE obj IN :users")
-    Set<UserMinDTO> findUserWithRoles(Set<User> users);
+    List<UserMinDTO> findUserWithRoles(List<User> users);
 
     boolean existsByEmail(String email);
 

@@ -1,7 +1,12 @@
 package com.helpdeskspringapi.helpdesk.dtos.user;
 
+import com.helpdeskspringapi.helpdesk.dtos.role.RoleMinDTO;
 import com.helpdeskspringapi.helpdesk.entities.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class UserMinDTO {
 
@@ -11,14 +16,21 @@ public class UserMinDTO {
     @Schema(description = "Username", example = "marco123")
     private String name;
 
-    public UserMinDTO(Long id, String name) {
+    private Set<RoleMinDTO> rolesDTO = new HashSet<>();
+
+    public UserMinDTO(Long id, String name, Set<RoleMinDTO> rolesDTO) {
         this.id = id;
         this.name = name;
+        this.rolesDTO = rolesDTO;
     }
 
     public UserMinDTO(User user) {
         id = user.getId();
         name = user.getName();
+
+        for (GrantedAuthority role : user.getRoles()) {
+            rolesDTO.add(new RoleMinDTO(role));
+        }
     }
 
     public Long getId() {
@@ -27,6 +39,10 @@ public class UserMinDTO {
 
     public String getName() {
         return name;
+    }
+
+    public Set<RoleMinDTO> getRolesDTO() {
+        return rolesDTO;
     }
 
     public void setId(Long id) {
