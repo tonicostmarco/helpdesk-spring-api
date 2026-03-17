@@ -11,6 +11,7 @@ import com.helpdeskspringapi.helpdesk.entities.User;
 import com.helpdeskspringapi.helpdesk.exceptions.*;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -196,13 +197,18 @@ public class TicketService {
 
             return new TicketMinDTO(ticket);
 
-        } catch (ResourceNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
         }
 
     }
 
 
+    /**
+     * Patch ticket status by id.
+     * Throws BusinessException when the requested status change is not applicable; catches JPA EntityNotFoundException
+     * and rethrows ResourceNotFoundException for consistency.
+     */
     @Transactional
     public TicketMinDTO patchStatus(Long id, TicketPatchDTO dto) {
         try {
@@ -252,13 +258,18 @@ public class TicketService {
             );
 
             return new TicketMinDTO(ticket);
-        } catch (ResourceNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
         }
 
     }
 
 
+    /**
+     * Delete a ticket by id.
+     * Only closed tickets may be deleted; throws ResourceNotFoundException if the id does not exist
+     * and BusinessException if the ticket is not closed. DatabaseException is propagated for referential integrity issues.
+     */
     @Transactional
     public void delete(Long id) {
 
