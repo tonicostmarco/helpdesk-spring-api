@@ -230,11 +230,16 @@ public class TicketService {
             );
 
             return new TicketMinDTO(ticket);
-        } catch (ResourceNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Ticket ID not found");
         }
     }
 
+    /**
+     * Patch ticket priority by id.
+     * Throws BusinessException when the requested priority change is not applicable; catches JPA EntityNotFoundException
+     * and rethrows ResourceNotFoundException for consistency.
+     */
     @Transactional
     public TicketMinDTO patchPriority(Long id, TicketPatchDTO dto) {
 
@@ -289,6 +294,10 @@ public class TicketService {
 
     }
 
+    /**
+     * Initialize ticket defaults: sets LOW priority, OPEN status, createdAt to now, updatedAt to the epoch,
+     * and assigns the authenticated user as the client.
+     */
     public void copyDTOtoEntity(TicketInputDTO dto, Ticket ticket) {
         User me = userAuthService.authenticated();
         ticket.setTitle(dto.getTitle());
@@ -302,6 +311,8 @@ public class TicketService {
     }
 
     private void sendTicketSms(String senderName, Integer ddd, String phone, String message) {
+        // External side-effect: sending an SMS is best-effort; wrap any exception in MessageException so
+        // callers can handle SMS failures uniformly (mapped to SERVICE_UNAVAILABLE by ControllerAdvice).
         try {
             messageSender.sendSms(new MessageRequest(senderName, ddd, phone, message));
         } catch (Exception e) {
