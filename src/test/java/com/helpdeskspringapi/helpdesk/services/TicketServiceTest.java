@@ -5,7 +5,7 @@ import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketInputDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketMinDTO;
 import com.helpdeskspringapi.helpdesk.dtos.ticket.TicketPatchDTO;
-import com.helpdeskspringapi.helpdesk.dtos.twillio.MessageRequest;
+import com.helpdeskspringapi.helpdesk.exceptions.InvalidParameterException;
 import com.helpdeskspringapi.helpdesk.dtos.user.UserDTO;
 import com.helpdeskspringapi.helpdesk.entities.Category;
 import com.helpdeskspringapi.helpdesk.entities.Ticket;
@@ -14,6 +14,7 @@ import com.helpdeskspringapi.helpdesk.entities.enums.TicketPriority;
 import com.helpdeskspringapi.helpdesk.entities.enums.TicketStatus;
 import com.helpdeskspringapi.helpdesk.exceptions.BusinessException;
 import com.helpdeskspringapi.helpdesk.exceptions.ResourceNotFoundException;
+import com.helpdeskspringapi.helpdesk.exceptions.DatabaseException;
 import com.helpdeskspringapi.helpdesk.factory.CategoryFactory;
 import com.helpdeskspringapi.helpdesk.factory.TicketFactory;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
@@ -22,7 +23,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,15 +43,8 @@ import static org.mockito.Mockito.*;
 public class TicketServiceTest {
 
 
-
     private Long existingId;
     private Long nonExistingId;
-    private Set<Long> ids;
-    private Set<Long> wrongIds;
-    private String expectedTitle;
-    private String nonExistingTitle;
-    private String expectedCategory;
-    private String nonExistingCategory;
 
     private Ticket ticket;
     private TicketDTO ticketDTO;
@@ -95,10 +88,6 @@ public class TicketServiceTest {
 
         existingId = 1L;
         nonExistingId = 100L;
-        expectedTitle = "Internet cai do nada";
-        nonExistingTitle = "nonExistingTitle";
-        expectedCategory = "DNS";
-        nonExistingCategory = "nonExistingCategory";
 
         ticket = TicketFactory.createTicket();
         ticketDTO = TicketFactory.createTicketDTO();
@@ -115,22 +104,8 @@ public class TicketServiceTest {
         pageMin = new PageImpl<>(List.of(minDTO));
         pageable = PageRequest.of(0, 10);
 
-        ids = inputDTO.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
-        wrongIds = inputDTO.getCategories().stream().map(x -> x.getId() + 7L).collect(Collectors.toSet());
-
         when(ticketRepository.findById(existingId)).thenReturn(Optional.of(ticket));
         when(ticketRepository.findById(nonExistingId)).thenReturn(Optional.empty());
-
-        when(ticketRepository.findByTitleContainingIgnoreCase(expectedTitle)).thenReturn(listMinDTO);
-        when(ticketRepository.findByTitleContainingIgnoreCase(nonExistingTitle)).thenThrow(ResourceNotFoundException.class);
-
-        when(ticketRepository.findByCategory(expectedCategory)).thenReturn(listMinDTO);
-        doThrow(ResourceNotFoundException.class).when(ticketRepository).findByCategory(nonExistingCategory);
-        when(ticketRepository.existsByCategoriesName(expectedCategory)).thenReturn(true);
-        when(ticketRepository.existsByCategoriesName(nonExistingCategory)).thenReturn(false);
-
-        when(categoryRepository.findAllById(ids)).thenReturn(categories);
-        when(categoryRepository.findAllById(wrongIds)).thenReturn(List.of());
 
         when(ticketRepository.findAll(pageable)).thenReturn(page);
         when(ticketRepository.findAllWithUsers(pageable)).thenReturn(pageMin);
@@ -138,7 +113,8 @@ public class TicketServiceTest {
 
         when(ticketRepository.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(ticketRepository.getReferenceById(existingId)).thenReturn(ticket);
-        when(ticketRepository.getReferenceById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
+
+        when(ticketRepository.getReferenceById(nonExistingId)).thenThrow(new jakarta.persistence.EntityNotFoundException());
 
         User authenticatedUser = ticket.getClient();
         when(userAuthService.authenticated()).thenReturn(authenticatedUser);
@@ -149,6 +125,8 @@ public class TicketServiceTest {
         when(ticketRepository.existsById(nonExistingId)).thenReturn(false);
 
     }
+
+    // ---------- FIND BY ID ----------
 
     @Test
     public void shouldReturnTicketMinDTOWhenIdExists() {
@@ -176,6 +154,8 @@ public class TicketServiceTest {
         verify(ticketRepository).findAll(pageable);
     }
 
+    // ---------- FIND ALL WITH USERS / PAGING ----------
+
     @Test
     public void shouldReturnTicketWithUsersPageable() {
 
@@ -190,6 +170,9 @@ public class TicketServiceTest {
     @Test
     public void shouldReturnTicketByTitle() {
 
+        String expectedTitle = "Internet cai do nada";
+        when(ticketRepository.findByTitleContainingIgnoreCase(expectedTitle)).thenReturn(listMinDTO);
+
         List<TicketMinDTO> tickets = service.findByTitle(expectedTitle);
 
         Assertions.assertNotNull(tickets);
@@ -200,7 +183,57 @@ public class TicketServiceTest {
     }
 
     @Test
+    public void shouldThrowInvalidParameterExceptionWhenTitleIsBlank() {
+
+        Assertions.assertThrows(InvalidParameterException.class, () -> service.findByTitle("   "));
+        verify(ticketRepository, never()).findByTitleContainingIgnoreCase(any());
+
+    }
+
+    // ---------- FIND ME / AUTHORIZED ----------
+
+    @Test
+    public void shouldThrowInvalidParameterExceptionWhenCategoryIsBlank() {
+
+        Assertions.assertThrows(InvalidParameterException.class, () -> service.findByCategory("  "));
+        verify(ticketRepository, never()).findByCategory(any());
+        verify(ticketRepository, never()).existsByCategoriesName(any());
+
+    }
+
+    @Test
+    public void shouldReturnTicketWhenFindMe() {
+
+        TicketMinDTO result = service.findMe(existingId);
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(existingId, result.getId());
+        verify(ticketRepository).findById(existingId);
+
+    }
+
+    @Test
+    public void shouldCopyDTOtoEntitySettingFields() {
+
+        User me = ticket.getClient();
+        when(userAuthService.authenticated()).thenReturn(me);
+
+        Ticket newTicket = new Ticket();
+        service.copyDTOtoEntity(inputDTO, newTicket);
+
+        Assertions.assertNotNull(newTicket);
+        Assertions.assertEquals(inputDTO.getTitle(), newTicket.getTitle());
+        Assertions.assertEquals(inputDTO.getDescription(), newTicket.getDescription());
+        Assertions.assertNotNull(newTicket.getCreatedAt());
+        Assertions.assertNotNull(newTicket.getUpdatedAt());
+        Assertions.assertEquals(me, newTicket.getClient());
+
+    }
+
+    @Test
     public void shouldThrowResourceNotFoundExceptionWhenTitleDoesNotExist() {
+        String nonExistingTitle = "nonExistingTitle";
+        when(ticketRepository.findByTitleContainingIgnoreCase(nonExistingTitle)).thenThrow(ResourceNotFoundException.class);
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByTitle(nonExistingTitle));
         verify(ticketRepository).findByTitleContainingIgnoreCase(nonExistingTitle);
@@ -208,6 +241,9 @@ public class TicketServiceTest {
 
     @Test
     public void shouldReturnTicketByCategory() {
+        String expectedCategory = "DNS";
+        when(ticketRepository.findByCategory(expectedCategory)).thenReturn(listMinDTO);
+        when(ticketRepository.existsByCategoriesName(expectedCategory)).thenReturn(true);
 
         List<TicketMinDTO> tickets = service.findByCategory(expectedCategory);
 
@@ -218,11 +254,14 @@ public class TicketServiceTest {
 
     @Test
     public void shouldThrowResourceNotFoundExceptionWhenCategoryDoesNotExist() {
+        String nonExistingCategory = "nonExistingCategory";
+        doThrow(ResourceNotFoundException.class).when(ticketRepository).findByCategory(nonExistingCategory);
+        when(ticketRepository.existsByCategoriesName(nonExistingCategory)).thenReturn(false);
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findByCategory(nonExistingCategory));
-        
+
         verify(ticketRepository, never()).findByCategory(nonExistingCategory);
-        verify(ticketRepository, times(1)).existsByCategoriesName(nonExistingCategory);
+        verify(ticketRepository).existsByCategoriesName(nonExistingCategory);
     }
 
     @Test
@@ -246,16 +285,22 @@ public class TicketServiceTest {
     @Test
     public void shouldInsertNewTicketWhenCorrectData() {
 
+        Set<Long> ids = inputDTO.getCategories().stream().map(CategoryDTO::getId).collect(Collectors.toSet());
+        when(categoryRepository.findAllById(ids)).thenReturn(categories);
+
         TicketMinDTO localDTO = service.insert(inputDTO);
 
         Assertions.assertNotNull(localDTO);
         Assertions.assertEquals(inputDTO.getTitle(), localDTO.getTitle());
         verify(categoryRepository).findAllById(ids);
-        verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(ticketRepository).save(any(Ticket.class));
     }
 
     @Test
     public void shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories() {
+
+        Set<Long> wrongIds = inputDTO.getCategories().stream().map(x -> x.getId() + 7L).collect(Collectors.toSet());
+        when(categoryRepository.findAllById(wrongIds)).thenReturn(List.of());
 
         inputDTO.setCategories(inputDTO.getCategories().stream().map(category -> {
             CategoryDTO wrongCategory = new CategoryDTO();
@@ -276,8 +321,8 @@ public class TicketServiceTest {
 
         Assertions.assertNotNull(localDTO);
         Assertions.assertEquals(ticketDTO.getTitle(), localDTO.getTitle());
-        verify(ticketRepository, times(1)).getReferenceById(existingId);
-        verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(ticketRepository).getReferenceById(existingId);
+        verify(ticketRepository).save(any(Ticket.class));
 
     }
 
@@ -294,8 +339,8 @@ public class TicketServiceTest {
 
         TicketMinDTO localDTO = service.patchStatus(existingId, patchDTO);
 
-        verify(ticketRepository, times(1)).getReferenceById(existingId);
-        verify(ticketRepository, times(1)).save(any(Ticket.class));
+        verify(ticketRepository).getReferenceById(existingId);
+        verify(ticketRepository).save(any(Ticket.class));
     }
 
     @Test
@@ -311,6 +356,7 @@ public class TicketServiceTest {
 
     @Test
     public void shouldThrowResourceNotFoundExceptionInPatchStatusWhenIdDoesNotExist() {
+
 
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.patchStatus(nonExistingId, patchDTO));
         verify(ticketRepository).getReferenceById(nonExistingId);
@@ -361,9 +407,12 @@ public class TicketServiceTest {
 
     @Test
     public void shouldThrowDataIntegrityExceptionWhenDependentId() {
+        ticket.setStatus(TicketStatus.CLOSED);
 
-        Assertions.assertThrows(BusinessException.class, () -> service.delete(existingId));
-        verify(ticketRepository, never()).deleteById(existingId);
+        doThrow(new DatabaseException("Referential integrity failure")).when(ticketRepository).deleteById(existingId);
+
+        Assertions.assertThrows(DatabaseException.class, () -> service.delete(existingId));
+        verify(ticketRepository).deleteById(existingId);
 
     }
 
