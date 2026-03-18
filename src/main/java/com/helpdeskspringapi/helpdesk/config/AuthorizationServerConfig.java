@@ -64,7 +64,7 @@ public class AuthorizationServerConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain asSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
+        
         HttpSecurity http = httpSecurity.securityMatcher("/**");
 
         http.with(OAuth2AuthorizationServerConfigurer.authorizationServer(),
@@ -158,9 +158,12 @@ public class AuthorizationServerConfig {
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
         return context -> {
+
             OAuth2ClientAuthenticationToken principal = context.getPrincipal();
             CustomUserAuthorities user = (CustomUserAuthorities) principal.getDetails();
+
             List<String> authorities = user.getAuthorities().stream().map(x -> x.getAuthority()).toList();
+
             if (context.getTokenType().getValue().equals("access_token")) {
                 // @formatter:off
 				context.getClaims()
