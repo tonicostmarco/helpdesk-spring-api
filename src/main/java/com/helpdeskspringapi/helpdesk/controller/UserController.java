@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/search")
     public ResponseEntity<Set<UserMinDTO>> findByName(@Valid @RequestParam String name) {
 
@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserMinDTO>> findAll(Pageable pageable) {
 
@@ -74,7 +74,7 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/searchroles")
     public ResponseEntity<List<UserMinDTO>> findAllWithRoles() {
 
@@ -131,7 +131,7 @@ public class UserController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 

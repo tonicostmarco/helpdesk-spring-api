@@ -52,7 +52,7 @@ public class TicketController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_SUPPORT')")
     @GetMapping(value = "/me/{id}")
     public ResponseEntity<TicketMinDTO> findMe(@PathVariable Long id) {
 
