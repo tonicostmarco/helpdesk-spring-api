@@ -7,6 +7,7 @@ import com.helpdeskspringapi.helpdesk.entities.Role;
 import com.helpdeskspringapi.helpdesk.dtos.role.RoleDTO;
 import com.helpdeskspringapi.helpdesk.entities.User;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class UserFactory {
@@ -25,6 +26,7 @@ public class UserFactory {
     public static UserDTO createUserDTO() {
         return new UserDTO(createUser());
     }
+
     public static UserMinDTO createUserMinDTO() {
         return new UserMinDTO(createUser());
     }
@@ -38,7 +40,7 @@ public class UserFactory {
         dto.setDdd(11);
         dto.setPhone("900000002");
         dto.setPassword("$2b$10$Mpzz35YK9HNl9jYnCzUfGOTcCO6m9VCZN5LLf0A2h95hHgqmIbVmS");
-        dto.setRoles(Set.of(new RoleDTO(1L, "ROLE_ADMIN", Set.of())));
+        dto.setRoles(new HashSet<>(Set.of(new RoleDTO(1L, "ROLE_ADMIN", Set.of()))));
 
         return dto;
     }
