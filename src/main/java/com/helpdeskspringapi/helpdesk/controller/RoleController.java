@@ -43,7 +43,7 @@ public class RoleController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<RoleDTO> findById(@PathVariable Long id) {
 
@@ -63,7 +63,7 @@ public class RoleController {
                     @ApiResponse(description = "Forbidden", responseCode = "403")
             }
     )
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<RoleMinDTO>> findAll() {
 
@@ -83,7 +83,7 @@ public class RoleController {
                     @ApiResponse(description = "Forbidden", responseCode = "403")
             }
     )
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/searchusers")
     public ResponseEntity<List<RoleDTO>> findAllWithUsers() {
 
