@@ -150,6 +150,7 @@ public class UserService {
 
         try {
             userRepository.deleteById(id);
+            userRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity failure");
         }

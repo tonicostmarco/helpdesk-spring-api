@@ -12,6 +12,7 @@ import com.helpdeskspringapi.helpdesk.exceptions.*;
 import com.helpdeskspringapi.helpdesk.repositories.CategoryRepository;
 import com.helpdeskspringapi.helpdesk.repositories.TicketRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -288,16 +289,12 @@ public class TicketService {
         try {
             ticketRepository.deleteById(id);
 
-        } catch (DatabaseException e) {
+        } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity failure");
         }
 
     }
 
-    /**
-     * Initialize ticket defaults: sets LOW priority, OPEN status, createdAt to now, updatedAt to the epoch,
-     * and assigns the authenticated user as the client.
-     */
     public void copyDTOtoEntity(TicketInputDTO dto, Ticket ticket) {
         User me = userAuthService.authenticated();
         ticket.setTitle(dto.getTitle());
