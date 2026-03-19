@@ -43,7 +43,6 @@ class UserControllerTest {
 
     @MockitoBean
     private UserAuthService authService;
-    // ---------- GET /users/{id} ----------
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -78,7 +77,6 @@ class UserControllerTest {
         verify(userService).findById(1L);
     }
 
-    // ---------- GET /users/me ----------
 
     @Test
     @WithMockUser(roles = "SUPPORT")
@@ -349,8 +347,6 @@ class UserControllerTest {
 
         verify(userService).update(eq(1L), any());
     }
-
-    // ---------- DELETE /users/{id} ----------
 
     @Test
     @WithMockUser(roles = "ADMIN")

@@ -75,7 +75,6 @@ public class TicketControllerTest {
         when(service.findOldestFirst(any(Pageable.class))).thenReturn(pageMin);
     }
 
-    // ---------- GET /tickets ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldReturnPagedTicketsWhenFindAll() throws Exception {
@@ -91,7 +90,6 @@ public class TicketControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // ---------- GET /tickets/{id} ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldReturnTicketWhenFindByIdExists() throws Exception {
@@ -117,7 +115,6 @@ public class TicketControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // ---------- GET /tickets/me/{id} ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldReturnTicketWhenFindMe() throws Exception {
@@ -136,7 +133,6 @@ public class TicketControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // ---------- GET /tickets/searchtitle ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldReturnListWhenFindByTitle() throws Exception {
@@ -174,7 +170,6 @@ public class TicketControllerTest {
         verify(service).findByTitle(blank);
     }
 
-    // ---------- GET /tickets/searchcategory ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldReturnListWhenFindByCategory() throws Exception {
@@ -212,7 +207,6 @@ public class TicketControllerTest {
         verify(service).findByCategory(blank);
     }
 
-    // ---------- GET /tickets/searchusers and /byoldest ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldReturnPagedTicketsWithUsers() throws Exception {
@@ -231,7 +225,6 @@ public class TicketControllerTest {
         verify(service).findOldestFirst(any(Pageable.class));
     }
 
-    // ---------- POST /tickets ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldInsertWhenValid() throws Exception {
@@ -313,7 +306,7 @@ public class TicketControllerTest {
         verify(service).update(eq(nonExistingId), any(TicketPatchDTO.class));
     }
 
-    // ---------- PATCH /{id}/status ----------
+
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldUpdateStatusWhenIdExistsAndDataValid() throws Exception {
@@ -345,7 +338,6 @@ public class TicketControllerTest {
         verify(service).patchStatus(eq(existingId), any(TicketPatchDTO.class));
     }
 
-    // ---------- PATCH /{id}/priority ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldUpdatePriorityWhenIdExistsAndDataValid() throws Exception {
@@ -361,7 +353,6 @@ public class TicketControllerTest {
         verify(service).patchPriority(eq(existingId), any(TicketPatchDTO.class));
     }
 
-    // ---------- DELETE /tickets/{id} ----------
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldDeleteWhenIdExists() throws Exception {

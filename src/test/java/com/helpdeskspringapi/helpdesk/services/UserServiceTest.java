@@ -115,8 +115,6 @@ public class UserServiceTest {
 
     }
 
-    // ---------- FIND BY ID ----------
-
     @Test
     public void shouldReturnUserWhenIdExists() {
         UserMinDTO dto = service.findById(existingId);
@@ -131,8 +129,6 @@ public class UserServiceTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () -> service.findById(nonExistingId));
         verify(userRepository).findById(nonExistingId);
     }
-
-    // ---------- FIND BY NAME ----------
 
     @Test
     public void shouldReturnUsersByName() {
@@ -149,7 +145,7 @@ public class UserServiceTest {
         Assertions.assertThrows(InvalidParameterException.class, () -> service.findByName("   "));
     }
 
-    // ---------- PAGING / FIND ALL ----------
+
 
     @Test
     public void shouldReturnPagedUsers() {
@@ -172,7 +168,6 @@ public class UserServiceTest {
         verify(userRepository).findUserWithRoles(users);
     }
 
-    // ---------- INSERT / UPDATE / DELETE ----------
 
     @Test
     public void shouldInsertUserWhenCorrectData() {

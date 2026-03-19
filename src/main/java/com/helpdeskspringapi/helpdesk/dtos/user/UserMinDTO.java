@@ -16,6 +16,7 @@ public class UserMinDTO {
     @Schema(description = "Username", example = "marco123")
     private String name;
 
+    @Schema(description = "Roles", example = "ROLE_ADMIN")
     private Set<RoleMinDTO> rolesDTO = new HashSet<>();
 
     public UserMinDTO(Long id, String name, Set<RoleMinDTO> rolesDTO) {

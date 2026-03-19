@@ -126,7 +126,6 @@ public class TicketServiceTest {
 
     }
 
-    // ---------- FIND BY ID ----------
 
     @Test
     public void shouldReturnTicketMinDTOWhenIdExists() {
@@ -153,8 +152,6 @@ public class TicketServiceTest {
         Assertions.assertNotNull(tickets);
         verify(ticketRepository).findAll(pageable);
     }
-
-    // ---------- FIND ALL WITH USERS / PAGING ----------
 
     @Test
     public void shouldReturnTicketWithUsersPageable() {
@@ -190,7 +187,6 @@ public class TicketServiceTest {
 
     }
 
-    // ---------- FIND ME / AUTHORIZED ----------
 
     @Test
     public void shouldThrowInvalidParameterExceptionWhenCategoryIsBlank() {
