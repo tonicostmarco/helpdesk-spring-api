@@ -1,171 +1,203 @@
-# Helpdesk API
+# 🎫 Helpdesk API
 
-REST API for helpdesk ticket management with role-based access control, SMS/WhatsApp notifications, and full CRUD for users, tickets, and categories.
+A production-oriented REST API for managing support tickets, users, categories, and roles — built with Java 21, Spring Boot 3.4.5, OAuth2/JWT authentication, and real-time WhatsApp/SMS notifications via Twilio.
 
-This project was created for learning purposes, focusing on layered architecture, security, real-world authorization flows, and third-party integrations using Spring Boot.
-
----
-
-## About the project
-
-This API provides a complete helpdesk backend where clients can open support tickets, support agents can manage and update them, and admins can control users and roles.
-
-Status and priority changes trigger WhatsApp/SMS notifications via Twilio.
-
-All endpoints are protected with JWT Bearer authentication.
-
-The main goal is to practice more advanced backend topics such as Spring Security, OAuth2 resource server, authorization rules, N+1 query optimization, and external API integration.
+![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.5-brightgreen?style=flat-square&logo=springboot)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue?style=flat-square&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker)
+![JWT](https://img.shields.io/badge/Auth-OAuth2%2FJWT-blueviolet?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
 ---
 
-## What you practice here
+## 🧭 Why I Built This
 
-* REST API design
-* Layered architecture
-* DTO pattern (Input, Min, Full DTOs)
-* Bean Validation with custom error responses
-* Role-based authorization with `@PreAuthorize`
-* Self-or-admin access rules
-* Spring Security with custom password grant
-* JWT Bearer authentication
-* OAuth2 Resource Server
-* JPA with JPQL and join fetch optimizations
-* N+1 query prevention
-* Global exception handling with `@ControllerAdvice`
-* Third-party integration (Twilio SMS/WhatsApp)
-* Docker for local infrastructure (PostgreSQL + pgAdmin)
-* Environment-based configuration
-* Swagger UI (OpenAPI) documentation
+My background combines software engineering studies with hands-on experience in network troubleshooting, NOC environments, and administrative workflows. I wanted to simulate a realistic helpdesk environment — the kind used by network operations and support teams — as a way to bridge those two worlds in code.
+
+The system goes beyond basic CRUD. I wanted clients to be immediately notified whenever their ticket status changed, so they would not be left wondering about the progress of their own support request. That same principle guided the decision to send a welcome notification when a new user is created — without exposing the password, for obvious security reasons.
+
+Role-based access was designed from real operational assumptions: a client should not be able to change their own ticket status, a NOC operator should not be able to delete users, and only an admin should have full control. OAuth2 + Spring Security enforces those boundaries at the method level, with BCrypt protecting passwords at rest.
 
 ---
 
-## Technologies
+## 🚀 Tech Stack
 
-* Java
-* Spring Boot 3.4.5
-* Spring Web
-* Spring Data JPA
-* Spring Security
-* OAuth2 Resource Server
-* Jakarta Bean Validation
-* Twilio SDK
-* PostgreSQL
-* Docker / Docker Compose
-* Maven
-
----
-
-## Features
-
-**Users**
-
-* Create, update, delete user
-* Find user by id
-* Find user by name
-* List users with pagination
-* List users with roles
-* Get authenticated user (`/users/me`)
-
-**Tickets**
-
-* Create, update, delete ticket
-* Find ticket by id
-* List all tickets with pagination
-* List tickets with user data
-* Search tickets by title
-* Search tickets by category
-* List tickets ordered by oldest first
-* Patch ticket status
-* Patch ticket priority
-
-**Categories**
-
-* Create, update, delete category
-* Find category by id
-* List all categories
-* List categories with ticket data
-
-**Roles**
-
-* Find role by id
-* List all roles
-* List roles with user data
-
-**Notifications**
-
-* Send custom SMS/WhatsApp message via Twilio
-* Auto-notify client on ticket status/priority changes
+| Layer | Technology |
+|---|---|
+| Language | Java 21 |
+| Framework | Spring Boot 3.4.5 |
+| Security | Spring Security · OAuth2 Authorization Server · JWT (Resource Server) |
+| Persistence | Spring Data JPA / Hibernate |
+| Database | PostgreSQL (dev/prod) · H2 (test) |
+| Validation | Bean Validation (Jakarta) |
+| Notifications | Twilio (WhatsApp / SMS) |
+| Documentation | SpringDoc OpenAPI / Swagger UI |
+| Infrastructure | Docker Compose (PostgreSQL 14-alpine + pgAdmin) |
+| Testing | JUnit 5 · Mockito · WebMvcTest · DataJpaTest · SpringBootTest |
+| Coverage | JaCoCo |
 
 ---
 
-## Authorization rules
+## 🏛️ Architecture
 
-| Role           | Permissions                                      |
-| -------------- | ------------------------------------------------ |
-| `ROLE_ADMIN`   | Full access to all resources                     |
-| `ROLE_SUPPORT` | Read/update tickets, read users and categories   |
-| `ROLE_CLIENT`  | Create tickets, view and manage own tickets only |
-| `ROLE_NOC`     | Read-only access for monitoring purposes         |
+The project follows a **layered architecture** with clear separation of concerns:
 
-* Ticket creation automatically binds the ticket to the authenticated user
-* Users can only update or delete their own tickets unless they are admins
-* Self-or-admin rules are enforced on sensitive operations
+```
+HTTP Request
+    └── Controller         (route mapping, Bean Validation, declarative auth)
+         └── Service       (business rules, imperative auth, Twilio integration)
+              └── Repository (JPA queries, JPQL projections, JOIN FETCH)
+                   └── Entity (User, Role, Ticket, Category)
 
----
-
-## Password rules
-
-The password must:
-
-* Have at least 4 characters
-* Contain:
-
-  * Uppercase letter
-  * Lowercase letter
-  * Number
-  * Symbol
-
-Passwords are hashed with BCrypt before storage.
-
----
-
-## Documentation (Swagger)
-
-After starting the application, access:
-
-Swagger UI:
-
-```text
-http://localhost:8080/swagger-ui/index.html
+Exceptions → ControllerAdvice → standardized HTTP error payloads
 ```
 
-OpenAPI JSON:
+### Package Structure
 
 ```text
-http://localhost:8080/v3/api-docs
+controller/
+  handlers/
+services/
+repositories/
+entities/
+  enums/
+dtos/
+  user/
+  ticket/
+  category/
+  role/
+  message/
+config/
+  customgrant/
+projections/
+exceptions/
 ```
 
 ---
 
-## Endpoints
+## 🔐 Authentication & Authorization
 
-Base URL:
+**Mechanism:** OAuth2 Authorization Server with a custom `password` grant type. Tokens are signed JWTs validated by the Resource Server on every request. Roles and username are embedded as claims at issuance.
 
-```text
-http://localhost:8080
+**Token lifetime:** 86400 seconds (24h) — configurable via `JWT_DURATION`.
+
+> ⚠️ Keys are generated in memory at startup. Tokens are invalidated after a server restart. Persistent key storage is on the roadmap.
+
+### Auth Flow
+
+![Security Flow](docs/SECURITY.png)
+
+### Getting a Token
+
+```bash
+curl -X POST http://localhost:8080/oauth2/token \
+  -u "myclientid:myclientsecret" \
+  -d "grant_type=password&username=admin@helpdesk.com&password=YourPassword&scope=read write"
 ```
 
-All endpoints require a JWT Bearer token unless stated otherwise.
+Response:
+```json
+{
+  "access_token": "<jwt>",
+  "token_type": "Bearer",
+  "expires_in": 86400
+}
+```
+
+Use the token in all subsequent requests:
+```
+Authorization: Bearer <access_token>
+```
+
+### Roles
+
+| Role | Permissions |
+|---|---|
+| `ROLE_ADMIN` | Full access: users, tickets, categories, roles |
+| `ROLE_NOC` | Read/update tickets · Create/edit/delete categories · `/users/me` · Send messages |
+| `ROLE_SUPPORT` | Read/update tickets · Search by title/category · `/users/me` · Send messages |
+| `ROLE_CLIENT` | Create tickets · View own tickets (`selfOrAllowed`) · `/users/me` |
+
+**Authorization strategy:** Two-level enforcement:
+- **`selfOrAdmin`** — a user can only access their own data unless they hold `ROLE_ADMIN`
+- **`selfOrAllowed`** — a client can only view their own ticket; NOC/ADMIN/SUPPORT can view all
+
+### Password Rules
+
+Passwords must:
+- Have between 4 and 15 characters
+- Contain at least one uppercase letter
+- Contain at least one lowercase letter
+- Contain at least one number
+- Contain at least one symbol
+
+All passwords are hashed with **BCrypt** before storage.
+
+---
+
+## 📋 Business Rules
+
+| Rule | Enforced In | Critical |
+|---|---|---|
+| User can only access own data unless admin (`selfOrAdmin`) | `AuthService` + `UserService.findById` | ✅ |
+| Client can only see own ticket; team roles see all (`selfOrAllowed`) | `AuthService` + `TicketService` | ✅ |
+| New ticket is automatically associated to the authenticated user | `TicketService.copyDTOtoEntity` | ✅ |
+| New ticket always starts with `priority=LOW`, `status=OPEN` | `TicketService.copyDTOtoEntity` | — |
+| Email must be unique per user | `UserService.insert` + DB unique constraint | ✅ |
+| All role IDs sent on user creation must exist | `UserService.insert` | ✅ |
+| All category IDs sent on ticket creation must exist | `TicketService.insert` | ✅ |
+| Ticket can only be deleted when `status=CLOSED` | `TicketService.delete` | ✅ |
+| PATCH status only executes if new value differs from current | `TicketService.patchStatus` | ⚠️ |
+| PATCH priority only executes if new value differs from current | `TicketService.patchPriority` | ⚠️ |
+| Category name must be unique | `CategoryService.insert` | ⚠️ |
+| Search by title/category rejects blank parameter | `TicketService.findByTitle/findByCategory` | ⚠️ |
+| Twilio failure is encapsulated as `MessageException` → HTTP 503 | `UserService` + `TicketService` wrappers | — |
+
+---
+
+## 🔌 Endpoints
+
+Base URL: `http://localhost:8080`
+
+All endpoints require `Authorization: Bearer <token>` unless stated otherwise.
+
+---
+
+### Auth
+
+#### Issue access token
+
+```http
+POST /oauth2/token
+```
+
+Form parameters (with client credentials via Basic Auth):
+
+```text
+grant_type=password
+username=admin@helpdesk.com
+password=YourPassword
+scope=read write
+```
+
+---
 
 ### Users
 
-#### Get user by id
+#### Get authenticated user
+
+```http
+GET /users/me
+```
+
+#### Get user by ID
 
 ```http
 GET /users/{id}
 ```
 
-#### List users
+#### List users (paginated)
 
 ```http
 GET /users?page=0&size=10
@@ -174,7 +206,7 @@ GET /users?page=0&size=10
 #### List users with roles
 
 ```http
-GET /users/searchroles?page=0&size=10
+GET /users/searchroles
 ```
 
 #### Search users by name
@@ -183,19 +215,11 @@ GET /users/searchroles?page=0&size=10
 GET /users/search?name=marco
 ```
 
-#### Get authenticated user
-
-```http
-GET /users/me
-```
-
 #### Create user
 
 ```http
 POST /users
 ```
-
-Request body:
 
 ```json
 {
@@ -204,7 +228,7 @@ Request body:
   "ddd": 11,
   "phone": "998877665",
   "password": "Abc@1234",
-  "roles": [{ "id": 1, "authority": "ROLE_CLIENT" }]
+  "roles": [{ "id": 4 }]
 }
 ```
 
@@ -214,8 +238,6 @@ Request body:
 PUT /users/{id}
 ```
 
-Request body:
-
 ```json
 {
   "name": "marco123",
@@ -223,7 +245,7 @@ Request body:
   "ddd": 11,
   "phone": "998877665",
   "password": "Abc@1234",
-  "roles": [{ "id": 1, "authority": "ROLE_CLIENT" }]
+  "roles": [{ "id": 4 }]
 }
 ```
 
@@ -237,13 +259,19 @@ DELETE /users/{id}
 
 ### Tickets
 
-#### Get ticket by id
+#### Get ticket by ID
 
 ```http
 GET /tickets/{id}
 ```
 
-#### List tickets
+#### Get ticket (selfOrAllowed rule)
+
+```http
+GET /tickets/me/{id}
+```
+
+#### List tickets (paginated)
 
 ```http
 GET /tickets?page=0&size=10
@@ -258,7 +286,7 @@ GET /tickets/searchusers?page=0&size=10
 #### Search tickets by title
 
 ```http
-GET /tickets/searchtitle?title=internet&page=0&size=10
+GET /tickets/searchtitle?title=internet
 ```
 
 #### Search tickets by category
@@ -279,22 +307,25 @@ GET /tickets/byoldest?page=0&size=10
 POST /tickets
 ```
 
-Request body example (recommended for existing categories):
-
 ```json
 {
   "title": "Internet down",
   "description": "Customer reports no connectivity since morning",
-  "categories": [
-    { "id": 3 }
-  ]
+  "categories": [{ "id": 3 }]
 }
 ```
 
-#### Update ticket
+#### Update ticket (status + priority)
 
 ```http
 PUT /tickets/{id}
+```
+
+```json
+{
+  "status": "IN_PROGRESS",
+  "priority": "HIGH"
+}
 ```
 
 #### Patch ticket status
@@ -303,15 +334,13 @@ PUT /tickets/{id}
 PATCH /tickets/{id}/status
 ```
 
-Request body:
-
 ```json
 {
-  "status": "IN_PROGRESS"
+  "status": "RESOLVED"
 }
 ```
 
-Available statuses: `OPEN` - `IN_PROGRESS` - `RESOLVED` - `CLOSED`
+Available statuses: `OPEN` · `IN_PROGRESS` · `RESOLVED` · `CLOSED`
 
 #### Patch ticket priority
 
@@ -319,15 +348,13 @@ Available statuses: `OPEN` - `IN_PROGRESS` - `RESOLVED` - `CLOSED`
 PATCH /tickets/{id}/priority
 ```
 
-Request body:
-
 ```json
 {
   "priority": "HIGH"
 }
 ```
 
-Available priorities: `LOW` - `MEDIUM` - `HIGH`
+Available priorities: `LOW` · `MEDIUM` · `HIGH`
 
 #### Delete ticket
 
@@ -335,11 +362,13 @@ Available priorities: `LOW` - `MEDIUM` - `HIGH`
 DELETE /tickets/{id}
 ```
 
+> Only tickets with `status=CLOSED` can be deleted.
+
 ---
 
 ### Categories
 
-#### Get category by id
+#### Get category by ID
 
 ```http
 GET /categories/{id}
@@ -354,7 +383,7 @@ GET /categories
 #### List categories with tickets
 
 ```http
-GET /categories/searchtickets?page=0&size=10
+GET /categories/searchtickets
 ```
 
 #### Create category
@@ -362,8 +391,6 @@ GET /categories/searchtickets?page=0&size=10
 ```http
 POST /categories
 ```
-
-Request body:
 
 ```json
 {
@@ -394,7 +421,7 @@ DELETE /categories/{id}
 GET /roles
 ```
 
-#### Get role by id
+#### Get role by ID
 
 ```http
 GET /roles/{id}
@@ -416,8 +443,6 @@ GET /roles/searchusers
 POST /send-message
 ```
 
-Request body:
-
 ```json
 {
   "sender": "helpdesk",
@@ -429,140 +454,172 @@ Request body:
 
 ---
 
-## Error handling
+## ⚠️ Error Handling
 
-The API uses centralized exception handling with `@ControllerAdvice`.
+All errors are handled centrally via `@ControllerAdvice` with a standardized payload.
 
-### Possible responses
-
-* **400 Bad Request**
-  Validation errors, malformed requests
-
-* **401 Unauthorized**
-  Missing or invalid JWT token
-
-* **403 Forbidden**
-  Authenticated but not allowed to perform the action
-
-* **404 Not Found**
-  Resource not found
-
-* **422 Unprocessable Entity**
-  Business rule violations (e.g. invalid category on ticket creation)
+| Code | Meaning |
+|---|---|
+| `400 Bad Request` | Validation errors, malformed requests, business rule violations (e.g. deleting an open ticket) |
+| `401 Unauthorized` | Missing or invalid JWT token |
+| `403 Forbidden` | Authenticated but not authorized to perform the action |
+| `404 Not Found` | Resource not found |
+| `503 Service Unavailable` | Twilio notification failure |
 
 ---
 
-## Project structure
+## ⚙️ Environment Variables
 
-```text
-controllers
-services
-repositories
-dto
-  user
-  ticket
-  category
-  role
-  message
-entities
-enums
-exceptions
-security
-config
-```
+### Required
+
+| Variable | Description | Example |
+|---|---|---|
+| `APP_PROFILE` | Spring active profile | `test` \| `dev` \| `prod` |
+| `CLIENT_ID` | OAuth2 client ID | `myclientid` |
+| `CLIENT_SECRET` | OAuth2 client secret | `myclientsecret` |
+| `JWT_DURATION` | Token lifetime in seconds | `86400` |
+| `CORS_ORIGINS` | Allowed origins (comma-separated) | `http://localhost:5173` |
+| `DB_URL` | PostgreSQL JDBC URL | `jdbc:postgresql://localhost:5433/helpdeskapi` |
+| `DB_USERNAME` | Database user | `postgres` |
+| `DB_PASSWORD` | Database password | `yourpassword` |
+| `TWILIO_ACCOUNT_SID` | Twilio account SID | `ACxxxxxxxxxxxxxxxxxxxxxxxx` |
+| `TWILIO_AUTH_TOKEN` | Twilio auth token | `xxxxxxxxxxxxxxxxxxxxxxxx` |
+| `TWILIO_WHATSAPP_FROM` | Twilio sender number | `whatsapp:+14155238886` |
+
+### Optional (Docker Compose only)
+
+| Variable | Default |
+|---|---|
+| `POSTGRES_DB` | `mydatabase` |
+| `POSTGRES_USER` | `postgres` |
+| `POSTGRES_PASSWORD` | `1234567` |
+| `PGADMIN_DEFAULT_EMAIL` | `me@example.com` |
+| `PGADMIN_DEFAULT_PASSWORD` | `1234567` |
+
+> ⚠️ Twilio variables are required for notification features. Without them, user/ticket creation will fail with HTTP 503.
 
 ---
 
-## Running locally
+## 🛠️ Running Locally
 
 ### Prerequisites
 
-* Java 21+
-* Maven
-* Docker
+| Tool | Minimum Version |
+|---|---|
+| Java | 21 |
+| Maven | 3.9.x |
+| Docker + Docker Compose | any recent version |
 
-### Setup
-
-1. Clone the repository:
+### Option 1 — H2 in-memory (no external DB needed)
 
 ```bash
 git clone https://github.com/tonicostmarco/helpdesk-spring-api
 cd helpdesk-spring-api
+APP_PROFILE=test ./mvnw spring-boot:run
 ```
 
-2. Start the database (PostgreSQL + pgAdmin):
+The `test` profile loads `import.sql` automatically with seed data.
+
+### Option 2 — PostgreSQL via Docker
 
 ```bash
+# Start PostgreSQL (port 5433) + pgAdmin
 docker compose up -d
+
+# Set environment variables, then run
+APP_PROFILE=dev ./mvnw spring-boot:run
 ```
 
-3. Configure environment variables.
+### Swagger UI
 
-Example for Docker Compose usage (adjust as needed):
-
-```text
-DB_URL=jdbc:postgresql://localhost:5433/mydatabase
-DB_USERNAME=postgres
-DB_PASSWORD=1234567
 ```
-
-Twilio (optional in dev):
-
-```text
-TWILIO_ACCOUNT_SID=your_sid
-TWILIO_AUTH_TOKEN=your_token
-TWILIO_WHATSAPP_FROM=whatsapp:+14155238886
-TWILIO_SMS_FROM=+14155238886
-```
-
-4. Run the application:
-
-```bash
-./mvnw spring-boot:run
-```
-
-5. Access the API docs:
-
-```text
 http://localhost:8080/swagger-ui/index.html
 ```
 
+Use the `/oauth2/token` endpoint to obtain a token, then click **Authorize** in Swagger UI.
+
 ---
 
-## Authentication
+## 🌱 Seed Data
 
-All endpoints require a JWT Bearer token.
+The following users are available when running with `APP_PROFILE=test`:
 
-Include it in the `Authorization` header:
+| Name | Email | Role |
+|---|---|---|
+| Marco Admin | `admin@helpdesk.com` | `ROLE_ADMIN` |
+| NOC User | `noc@helpdesk.com` | `ROLE_NOC` |
+| Support User | `support@helpdesk.com` | `ROLE_SUPPORT` |
+| Ana Client | `client@helpdesk.com` | `ROLE_CLIENT` |
 
-```text
-Authorization: Bearer <your_token>
+Credentials are defined in `src/main/resources/import.sql`.
+
+For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
+
+---
+
+## 🧪 Tests
+
+```bash
+./mvnw test
 ```
 
-### Obtaining a token
+| Type | Slice | What it covers |
+|---|---|---|
+| Controller | `@WebMvcTest` | HTTP layer, security, Bean Validation, request/response contracts |
+| Service | Mockito unit tests | Business rules, ownership authorization, exception handling |
+| Repository | `@DataJpaTest` + H2 | Query correctness, ordering, projections |
+| Context | `@SpringBootTest` | Application context loads without errors |
 
-This project uses an OAuth2 Authorization Server with a custom password grant flow.
+**Notable test cases:**
 
-Use Swagger UI to find the token endpoint and required parameters.
-
-If you prefer the code reference, check the security configuration for the configured token endpoint and grant parameters.
+| Test | Validates |
+|---|---|
+| `TicketServiceTest.shouldThrowBusinessExceptionWhenStatusIsNotClosed` | Open ticket cannot be deleted |
+| `TicketServiceTest.shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories` | Invalid category IDs rejected on ticket creation |
+| `UserServiceTest.shouldThrowBusinessExceptionWhenEmailAlreadyRegisteredOnInsert` | Email uniqueness enforced on user creation |
+| `UserControllerTest.shouldReturnBadRequestWhenInsertUserWithInvalidInput` | Bean Validation on `POST /users` |
+| `TicketControllerTest.shouldReturnUnauthorizedWhenFindAllWithoutAuth` | Protected routes require valid JWT |
+| `TicketRepositoryTest.shouldReturnAllOrderedByOldestFirst` | Ticket ordering by creation date ascending |
 
 ---
 
-## Notes
+## 🎯 Technical Decisions
 
-* This is a learning-focused project
-* Twilio integration is guarded and only initializes when credentials are present
-* Docker Compose sets up PostgreSQL and pgAdmin for local development
-* The seed file populates initial roles and users for testing
-* Some HTTP response codes may vary by endpoint while the API evolves (e.g. 200 vs 201 on create/update)
+| Decision | Reason |
+|---|---|
+| Custom `password` grant on Authorization Server | Practice building a complete OAuth2 flow with custom claims (`authorities`, `username`) embedded in the JWT — beyond standard form login |
+| `@PreAuthorize` + imperative `selfOrAdmin`/`selfOrAllowed` checks | Enforce both role-based and ownership-based rules that depend on runtime data, not just token claims |
+| Separate DTOs (Input / Min / Full) per resource | Decouple entity from API contract, control exactly what each response exposes, and prevent over-posting |
+| JPQL with `JOIN FETCH` and DTO projections | Prevent N+1 queries on `users↔roles` and `tickets↔categories` relationships |
+| `ControllerAdvice` with standardized error payload | Consistent error structure across all endpoints, simplifying both clients and test assertions |
+| Twilio decoupled behind `MessageSender` interface | Enables mock in tests and allows swapping implementation with minimal impact |
+| Multi-profile setup (test=H2, dev/prod=PostgreSQL) | Fast local test cycle without external dependencies; realistic production path |
+| Docker Compose only for infrastructure | Keep app running directly on JVM for easier debugging and faster Spring Boot dev loop |
 
 ---
 
-## Next steps
+## ⚠️ Known Limitations
 
-* Write unit and integration tests
-* Add refresh token support
-* Add ticket assignment to support agents
-* Add ticket comment/history tracking
-* Deploy to cloud (Railway, Render, or AWS)
+- JWT keys are generated in memory at startup — tokens are invalidated after a server restart.
+- `Role` management (POST/PUT/DELETE) is scaffolded but currently commented out in `RoleController`.
+- `CategoryRepository.findAllWithTickets` receives a filter parameter that the underlying query does not use.
+- `DELETE /tickets` catches `DatabaseException` instead of `DataIntegrityViolationException` — may not capture all referential integrity failures.
+- `POST /users` requires authentication by global security config, which may conflict with public registration use cases.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Persistent JWT key storage (restart-safe tokens)
+- [ ] Full CRUD for roles (already scaffolded in `RoleController`)
+- [ ] Refresh token support
+- [ ] Ticket assignment to support agents
+- [ ] Ticket history and comment threads
+- [ ] Expand test suite (integration tests for full OAuth2 flow)
+- [ ] Deploy to AWS EC2
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
