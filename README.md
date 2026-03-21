@@ -603,7 +603,6 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 - JWT keys are generated in memory at startup — tokens are invalidated after a server restart.
 - `Role` management (POST/PUT/DELETE) is scaffolded but currently commented out in `RoleController`.
 - `CategoryRepository.findAllWithTickets` receives a filter parameter that the underlying query does not use.
-- `DELETE /tickets` catches `DatabaseException` instead of `DataIntegrityViolationException` — may not capture all referential integrity failures.
 - `POST /users` requires authentication by global security config, which may conflict with public registration use cases.
 
 ---
