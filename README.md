@@ -566,20 +566,27 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 | Type | Slice | What it covers |
 |---|---|---|
 | Controller | `@WebMvcTest` | HTTP layer, security, Bean Validation, request/response contracts |
-| Service | Mockito unit tests | Business rules, ownership authorization, exception handling |
+| Service (unit) | Mockito + `@ExtendWith(MockitoExtension)` | Business rules, ownership authorization, exception handling in isolation |
+| Service (integration) | `@SpringBootTest` + H2 | Real persistence, Spring Security context, transactional behavior, ownership enforcement end-to-end |
 | Repository | `@DataJpaTest` + H2 | Query correctness, ordering, projections |
 | Context | `@SpringBootTest` | Application context loads without errors |
 
 **Notable test cases:**
 
-| Test | Validates |
-|---|---|
-| `TicketServiceTest.shouldThrowBusinessExceptionWhenStatusIsNotClosed` | Open ticket cannot be deleted |
-| `TicketServiceTest.shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories` | Invalid category IDs rejected on ticket creation |
-| `UserServiceTest.shouldThrowBusinessExceptionWhenEmailAlreadyRegisteredOnInsert` | Email uniqueness enforced on user creation |
-| `UserControllerTest.shouldReturnBadRequestWhenInsertUserWithInvalidInput` | Bean Validation on `POST /users` |
-| `TicketControllerTest.shouldReturnUnauthorizedWhenFindAllWithoutAuth` | Protected routes require valid JWT |
-| `TicketRepositoryTest.shouldReturnAllOrderedByOldestFirst` | Ticket ordering by creation date ascending |
+| Test | Type | Validates |
+|---|---|---|
+| `TicketServiceTest.shouldThrowBusinessExceptionWhenStatusIsNotClosed` | Unit | Open ticket cannot be deleted |
+| `TicketServiceTest.shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories` | Unit | Invalid category IDs rejected on ticket creation |
+| `TicketServiceTest.shouldThrowBusinessExceptionInPatchStatusWhenInvalidStatus` | Unit | PATCH status rejects same-value transitions |
+| `TicketServiceIT.shouldThrowForbiddenExceptionWhenFindMeFromDifferentClient` | Integration | Ownership enforcement — client cannot access another user's ticket |
+| `TicketServiceIT.shouldReturnOldestTicketFirst` | Integration | Real DB ordering by `createdAt` ascending, verified with two persisted tickets |
+| `TicketServiceIT.shouldInsertNewTicketWhenCorrectData` | Integration | Ticket persisted with correct owner, status, and default priority |
+| `TicketServiceIT.shouldDeleteTicketWhenIdExistsAndTicketIsClosed` | Integration | Delete confirmed via `existsById` against real DB |
+| `UserServiceTest.shouldThrowBusinessExceptionWhenEmailAlreadyRegisteredOnInsert` | Unit | Email uniqueness enforced on user creation |
+| `UserServiceIT.shouldThrowForbiddenExceptionWhenUserAccessesAnotherUsersData` | Integration | `selfOrAdmin` rule enforced end-to-end with real Security context |
+| `UserControllerTest.shouldReturnBadRequestWhenInsertUserWithInvalidInput` | Controller | Bean Validation on `POST /users` |
+| `TicketControllerTest.shouldReturnUnauthorizedWhenFindAllWithoutAuth` | Controller | Protected routes require valid JWT |
+| `TicketRepositoryTest.shouldReturnAllOrderedByOldestFirst` | Repository | Ticket ordering by creation date ascending |
 
 ---
 
@@ -592,7 +599,8 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 | Separate DTOs (Input / Min / Full) per resource | Decouple entity from API contract, control exactly what each response exposes, and prevent over-posting |
 | JPQL with `JOIN FETCH` and DTO projections | Prevent N+1 queries on `users↔roles` and `tickets↔categories` relationships |
 | `ControllerAdvice` with standardized error payload | Consistent error structure across all endpoints, simplifying both clients and test assertions |
-| Twilio decoupled behind `MessageSender` interface | Enables mock in tests and allows swapping implementation with minimal impact |
+| Twilio decoupled behind `MessageSender` interface | Enables `@MockitoBean` substitution in integration tests and allows swapping implementation with minimal impact |
+| Unit + integration test layers for services | Unit tests validate business logic in isolation with fast feedback; integration tests verify real persistence, Security context, and transactional behavior against H2 |
 | Multi-profile setup (test=H2, dev/prod=PostgreSQL) | Fast local test cycle without external dependencies; realistic production path |
 | Docker Compose only for infrastructure | Keep app running directly on JVM for easier debugging and faster Spring Boot dev loop |
 
@@ -614,7 +622,6 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 - [ ] Refresh token support
 - [ ] Ticket assignment to support agents
 - [ ] Ticket history and comment threads
-- [ ] Expand test suite (integration tests for full OAuth2 flow)
 - [ ] Deploy to AWS EC2
 
 ---
