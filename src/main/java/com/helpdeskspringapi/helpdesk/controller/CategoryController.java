@@ -81,7 +81,7 @@ public class CategoryController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
     @GetMapping("/searchtickets")
-    public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets(Pageable pageable) {
+    public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets() {
 
         List<CategoryMinDTO> dto = service.findAllWithTickets();
 
