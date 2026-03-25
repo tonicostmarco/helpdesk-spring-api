@@ -22,7 +22,6 @@ public class CategoryMinDTO {
 
     public CategoryMinDTO(Category category) {
         id = category.getId();
-        ;
         name = category.getName();
         description = category.getDescription();
 

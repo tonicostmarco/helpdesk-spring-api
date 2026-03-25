@@ -288,7 +288,7 @@ public class TicketService {
 
         try {
             ticketRepository.deleteById(id);
-
+            ticketRepository.flush();
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Referential integrity failure");
         }
