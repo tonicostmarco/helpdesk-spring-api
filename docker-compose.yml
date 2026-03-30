@@ -3,7 +3,7 @@ services:
     image: postgres:14-alpine
     container_name: dev-postgresql
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-mydatabase}
+      POSTGRES_DB: ${POSTGRES_DB:-helpdeskapi}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-1234567}
     ports:
