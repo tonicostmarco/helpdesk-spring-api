@@ -83,6 +83,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @PreAuthorize("hasAnyRole('ADMIN', 'NOC', 'SUPPORT')")
     @PostMapping(produces = "application/json")
     public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserInputDTO dto) {
 
