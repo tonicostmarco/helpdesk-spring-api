@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserMinDTO> findById(@PathVariable Long id) {
 
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN', 'CLIENT')")
     @GetMapping("/me")
     public ResponseEntity<UserDTO> findMe() {
 

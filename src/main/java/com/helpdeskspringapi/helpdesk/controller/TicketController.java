@@ -40,7 +40,7 @@ public class TicketController {
                     @ApiResponse(description = "Not Found", responseCode = "404")
             }
     )
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN', 'SUPPORT', 'CLIENT')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<TicketMinDTO> findById(@PathVariable Long id) {
 
@@ -50,7 +50,7 @@ public class TicketController {
 
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT', 'ROLE_SUPPORT')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN', 'CLIENT', 'SUPPORT')")
     @GetMapping(value = "/me/{id}")
     public ResponseEntity<TicketMinDTO> findMe(@PathVariable Long id) {
 
@@ -71,7 +71,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN')")
     @GetMapping
     public ResponseEntity<Page<TicketMinDTO>> findAll(@Valid Pageable pageable) {
 
@@ -92,7 +92,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN')")
     @GetMapping("/searchusers")
     public ResponseEntity<Page<TicketMinDTO>> findAllWithUsers(Pageable pageable) {
 
@@ -113,7 +113,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN', 'SUPPORT')")
     @GetMapping("/searchtitle")
     public ResponseEntity<List<TicketMinDTO>> findByTitle(@Valid @RequestParam String title) {
 
@@ -132,7 +132,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN', 'SUPPORT')")
     @GetMapping("/searchcategory")
     public ResponseEntity<List<TicketMinDTO>> findByCategory(@Valid @RequestParam String category) {
 
@@ -151,7 +151,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN', 'ROLE_SUPPORT')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN', 'SUPPORT')")
     @GetMapping("/byoldest")
     public ResponseEntity<Page<TicketMinDTO>> findOldestFirst(Pageable pageable) {
 
@@ -171,7 +171,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN', 'ROLE_CLIENT')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN', 'CLIENT')")
     @PostMapping(produces = "application/json")
     public ResponseEntity<TicketMinDTO> insert(@Valid @RequestBody TicketInputDTO dto) {
 
@@ -197,7 +197,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<TicketMinDTO> update(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
 
@@ -220,7 +220,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @PatchMapping(value = "/{id}/status", produces = "application/json")
     public ResponseEntity<TicketMinDTO> changeStatus(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
 
@@ -243,7 +243,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @PatchMapping(value = "/{id}/priority", produces = "application/json")
     public ResponseEntity<TicketMinDTO> changePriority(@PathVariable Long id, @Valid @RequestBody TicketPatchDTO dto) {
 
@@ -265,7 +265,7 @@ public class TicketController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> delete(@Valid @PathVariable Long id) {
 

@@ -37,7 +37,7 @@ public class CategoryController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<CategoryMinDTO> findById(@PathVariable Long id) {
 
@@ -58,7 +58,7 @@ public class CategoryController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @GetMapping
     public ResponseEntity<List<CategoryMinDTO>> findAll() {
 
@@ -79,7 +79,7 @@ public class CategoryController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @GetMapping("/searchtickets")
     public ResponseEntity<List<CategoryMinDTO>> findAllWithTickets() {
 
@@ -101,7 +101,7 @@ public class CategoryController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN')")
     @PostMapping(produces = "application/json")
     public ResponseEntity<CategoryMinDTO> insert(@RequestBody CategoryMinDTO dto) {
 
@@ -127,7 +127,7 @@ public class CategoryController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN')")
     @PutMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<CategoryMinDTO> update(@PathVariable Long id, @RequestBody CategoryMinDTO dto) {
 
@@ -149,7 +149,7 @@ public class CategoryController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('NOC', 'ADMIN')")
     @DeleteMapping(value = "/{id}", produces = "application/json")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
 

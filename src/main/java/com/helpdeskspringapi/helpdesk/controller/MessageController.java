@@ -33,7 +33,7 @@ public class MessageController {
             }
     )
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasAnyRole('ROLE_SUPPORT', 'ROLE_NOC', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPPORT', 'NOC', 'ADMIN')")
     @PostMapping("/send-message")
     public ResponseEntity<Void> sender(@RequestBody MessageRequest request) {
         sender.sendSms(request);
