@@ -1,6 +1,6 @@
 # 🎫 Helpdesk API
 
-A production-oriented REST API for managing support tickets, users, categories, and roles — built with Java 21, Spring Boot 3.4.5, OAuth2/JWT authentication, and real-time WhatsApp/SMS notifications via Twilio.
+A production-oriented REST API for managing support tickets, users, categories, and roles. Built with Java 21, Spring Boot 3.4.5, OAuth2/JWT authentication, and real-time WhatsApp/SMS notifications via Twilio.
 
 ![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.5-brightgreen?style=flat-square&logo=springboot)
@@ -13,9 +13,9 @@ A production-oriented REST API for managing support tickets, users, categories, 
 
 ## 🧭 Why I Built This
 
-My background combines software engineering studies with hands-on experience in network troubleshooting, NOC environments, and administrative workflows. I wanted to simulate a realistic helpdesk environment — the kind used by network operations and support teams — as a way to bridge those two worlds in code.
+My background combines software engineering studies with hands-on experience in network troubleshooting, NOC environments, and administrative workflows. I wanted to simulate a realistic helpdesk environment, the kind used by network operations and support teams, as a way to bridge those two worlds in code.
 
-The system goes beyond basic CRUD. I wanted clients to be immediately notified whenever their ticket status changed, so they would not be left wondering about the progress of their own support request. That same principle guided the decision to send a welcome notification when a new user is created — without exposing the password, for obvious security reasons.
+The system goes beyond basic CRUD. I wanted clients to be immediately notified whenever their ticket status changed, so they would not be left wondering about the progress of their own support request. That same principle guided the decision to send a welcome notification when a new user is created, without exposing the password, for obvious security reasons.
 
 Role-based access was designed from real operational assumptions: a client should not be able to change their own ticket status, a NOC operator should not be able to delete users, and only an admin should have full control. OAuth2 + Spring Security enforces those boundaries at the method level, with BCrypt protecting passwords at rest.
 
@@ -80,7 +80,7 @@ exceptions/
 
 **Mechanism:** OAuth2 Authorization Server with a custom `password` grant type. Tokens are signed JWTs validated by the Resource Server on every request. Roles and username are embedded as claims at issuance.
 
-**Token lifetime:** 86400 seconds (24h) — configurable via `JWT_DURATION`.
+**Token lifetime:** 86400 seconds (24h). Configurable via `JWT_DURATION`.
 
 > ⚠️ Keys are generated in memory at startup. Tokens are invalidated after a server restart. Persistent key storage is on the roadmap.
 
@@ -578,7 +578,7 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 | `TicketServiceTest.shouldThrowBusinessExceptionWhenStatusIsNotClosed` | Unit | Open ticket cannot be deleted |
 | `TicketServiceTest.shouldThrowResourceNotFoundExceptionInInsertMethodWhenWrongCategories` | Unit | Invalid category IDs rejected on ticket creation |
 | `TicketServiceTest.shouldThrowBusinessExceptionInPatchStatusWhenInvalidStatus` | Unit | PATCH status rejects same-value transitions |
-| `TicketServiceIT.shouldThrowForbiddenExceptionWhenFindMeFromDifferentClient` | Integration | Ownership enforcement — client cannot access another user's ticket |
+| `TicketServiceIT.shouldThrowForbiddenExceptionWhenFindMeFromDifferentClient` | Integration | Ownership enforcement. Client cannot access another user's ticket |
 | `TicketServiceIT.shouldReturnOldestTicketFirst` | Integration | Real DB ordering by `createdAt` ascending, verified with two persisted tickets |
 | `TicketServiceIT.shouldInsertNewTicketWhenCorrectData` | Integration | Ticket persisted with correct owner, status, and default priority |
 | `TicketServiceIT.shouldDeleteTicketWhenIdExistsAndTicketIsClosed` | Integration | Delete confirmed via `existsById` against real DB |
@@ -594,7 +594,7 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 
 | Decision | Reason |
 |---|---|
-| Custom `password` grant on Authorization Server | Practice building a complete OAuth2 flow with custom claims (`authorities`, `username`) embedded in the JWT — beyond standard form login |
+| Custom `password` grant on Authorization Server | Practice building a complete OAuth2 flow with custom claims (`authorities`, `username`) embedded in the JWT, beyond standard form login |
 | `@PreAuthorize` + imperative `selfOrAdmin`/`selfOrAllowed` checks | Enforce both role-based and ownership-based rules that depend on runtime data, not just token claims |
 | Separate DTOs (Input / Min / Full) per resource | Decouple entity from API contract, control exactly what each response exposes, and prevent over-posting |
 | JPQL with `JOIN FETCH` and DTO projections | Prevent N+1 queries on `users↔roles` and `tickets↔categories` relationships |
@@ -608,9 +608,8 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 
 ## ⚠️ Known Limitations
 
-- JWT keys are generated in memory at startup — tokens are invalidated after a server restart.
+- JWT keys are generated in memory at startup, tokens are invalidated after a server restart.
 - `Role` management (POST/PUT/DELETE) is scaffolded but currently commented out in `RoleController`.
-- `POST /users` requires authentication by global security config, which may conflict with public registration use cases.
 
 ---
 
