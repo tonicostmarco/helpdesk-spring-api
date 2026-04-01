@@ -496,7 +496,7 @@ All errors are handled centrally via `@ControllerAdvice` with a standardized pay
 | `PGADMIN_DEFAULT_EMAIL` | `me@example.com` |
 | `PGADMIN_DEFAULT_PASSWORD` | `1234567` |
 
-> ⚠️ Twilio variables are required for notification features. Without them, user/ticket creation will fail with HTTP 503.
+> ⚠️ Twilio variables are required for notification features.
 
 ---
 
