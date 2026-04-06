@@ -7,7 +7,20 @@ A production-oriented REST API for managing support tickets, users, categories, 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-blue?style=flat-square&logo=postgresql)
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker)
 ![JWT](https://img.shields.io/badge/Auth-OAuth2%2FJWT-blueviolet?style=flat-square)
+![Deploy](https://img.shields.io/badge/Deploy-AWS_EC2-FF9900?style=flat-square&logo=amazonaws)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+
+---
+
+## 🌐 Live Demo
+
+The API is deployed on AWS EC2 and publicly accessible.
+
+| Resource | URL |
+|---|---|
+| Swagger UI | http://18.228.31.222:8080/swagger-ui/index.html |
+| API Docs (JSON) | http://18.228.31.222:8080/api-docs |
+| Base URL | http://18.228.31.222:8080 |
 
 ---
 
@@ -91,6 +104,14 @@ exceptions/
 ### Getting a Token
 
 ```bash
+curl -X POST http://18.228.31.222:8080/oauth2/token \
+  -u "myclientid:myclientsecret" \
+  -d "grant_type=password&username=admin@helpdesk.com&password=YourPassword&scope=read write"
+```
+
+Or locally:
+
+```bash
 curl -X POST http://localhost:8080/oauth2/token \
   -u "myclientid:myclientsecret" \
   -d "grant_type=password&username=admin@helpdesk.com&password=YourPassword&scope=read write"
@@ -158,7 +179,7 @@ All passwords are hashed with **BCrypt** before storage.
 
 ## 🔌 Endpoints
 
-Base URL: `http://localhost:8080`
+Base URL: `http://18.228.31.222:8080`
 
 All endpoints require `Authorization: Bearer <token>` unless stated otherwise.
 
@@ -620,7 +641,7 @@ For PostgreSQL (dev/prod), run `create.sql` to apply schema and initial data.
 - [ ] Refresh token support
 - [ ] Ticket assignment to support agents
 - [ ] Ticket history and comment threads
-- [ ] Deploy to AWS EC2
+- [x] Deploy to AWS EC2
 
 ---
 
