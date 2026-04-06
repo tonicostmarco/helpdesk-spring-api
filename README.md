@@ -9,6 +9,7 @@ A production-oriented REST API for managing support tickets, users, categories, 
 ![JWT](https://img.shields.io/badge/Auth-OAuth2%2FJWT-blueviolet?style=flat-square)
 ![Deploy](https://img.shields.io/badge/Deploy-AWS_EC2-FF9900?style=flat-square&logo=amazonaws)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+![CI](https://github.com/tonicostmarco/helpdesk-spring-api/actions/workflows/ci.yml/badge.svg)
 
 ---
 
