@@ -9,7 +9,6 @@ A production-oriented REST API for managing support tickets, users, categories, 
 ![JWT](https://img.shields.io/badge/Auth-OAuth2%2FJWT-blueviolet?style=flat-square)
 ![Deploy](https://img.shields.io/badge/Deploy-AWS_EC2-FF9900?style=flat-square&logo=amazonaws)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
-![CI](https://github.com/tonicostmarco/helpdesk-spring-api/actions/workflows/ci.yml/badge.svg)
 
 ---
 
@@ -19,9 +18,9 @@ The API is deployed on AWS EC2 and publicly accessible.
 
 | Resource | URL |
 |---|---|
-| Swagger UI | http://18.228.31.222:8080/swagger-ui/index.html |
-| API Docs (JSON) | http://18.228.31.222:8080/api-docs |
-| Base URL | http://18.228.31.222:8080 |
+| Swagger UI | http://helpdesk-marco.duckdns.org:8080/swagger-ui/index.html |
+| API Docs (JSON) | http://helpdesk-marco.duckdns.org:8080/api-docs |
+| Base URL | http://helpdesk-marco.duckdns.org:8080 |
 
 ---
 
