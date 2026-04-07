@@ -18,11 +18,11 @@ public class OpenAPIConfig {
     public OpenAPI helpdeskAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("helpdeskAPI")
-                        .description("think about it later")
-                        .version("v0.0.1")
+                        .title("Helpdesk API")
+                        .description("REST API for managing support tickets, users, categories and roles. Features OAuth2/JWT authentication, role-based access control, and real-time WhatsApp/SMS notifications via Twilio.")
+                        .version("v1.0.0")
                         .license(new License()
-                                .name("Apache 2.0")
+                                .name("MIT")
                                 .url("https://github.com/tonicostmarco/helpdesk-spring-api")));
     }
 }
