@@ -76,7 +76,6 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
                 .filter(scope -> registeredClient.getScopes().contains(scope))
                 .collect(Collectors.toSet());
 
-        //-----------Create a new Security Context Holder Context----------
         OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = (OAuth2ClientAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         CustomUserAuthorities customPasswordUser = new CustomUserAuthorities(username, user.getAuthorities());
         oAuth2ClientAuthenticationToken.setDetails(customPasswordUser);
@@ -85,7 +84,6 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
         newcontext.setAuthentication(oAuth2ClientAuthenticationToken);
         SecurityContextHolder.setContext(newcontext);
 
-        //-----------TOKEN BUILDERS----------
         DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
                 .registeredClient(registeredClient)
                 .principal(clientPrincipal)

@@ -308,8 +308,6 @@ public class TicketService {
     }
 
     private void sendTicketSms(String senderName, Integer ddd, String phone, String message) {
-        // External side-effect: sending an SMS is best-effort; wrap any exception in MessageException so
-        // callers can handle SMS failures uniformly (mapped to SERVICE_UNAVAILABLE by ControllerAdvice).
         try {
             messageSender.sendSms(new MessageRequest(senderName, ddd, phone, message));
         } catch (Exception e) {

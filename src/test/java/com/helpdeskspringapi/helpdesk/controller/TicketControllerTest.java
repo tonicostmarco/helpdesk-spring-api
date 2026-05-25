@@ -274,7 +274,7 @@ public class TicketControllerTest {
         verify(service).insert(any(TicketInputDTO.class));
     }
 
-    // ---------- PUT /tickets/{id} ----------
+
     @Test
     @WithMockUser(roles = "ADMIN")
     public void shouldUpdateWhenIdExistsAndDataValid() throws Exception {

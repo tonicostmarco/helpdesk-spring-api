@@ -111,8 +111,6 @@ class UserControllerTest {
         verify(authService).getMe();
     }
 
-    // ---------- GET /users/search ----------
-
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldReturnUsersWhenFindByName() throws Exception {
@@ -157,8 +155,6 @@ class UserControllerTest {
         verify(userService).findByName("noone");
     }
 
-    // ---------- GET /users ----------
-
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldReturnPageWhenFindAll() throws Exception {
@@ -180,8 +176,6 @@ class UserControllerTest {
         verify(userService, never()).findAll(any());
     }
 
-    // ---------- GET /users/searchroles ----------
-
     @Test
     @WithMockUser(roles = "ADMIN")
     void shouldReturnListWhenFindAllWithRoles() throws Exception {
@@ -202,8 +196,6 @@ class UserControllerTest {
 
         verify(userService, never()).findAllWithRoles();
     }
-
-    // ---------- POST /users ----------
 
     @Test
     @WithMockUser
@@ -275,8 +267,6 @@ class UserControllerTest {
 
         verify(userService).insert(any(UserInputDTO.class));
     }
-
-    // ---------- PUT /users/{id} ----------
 
     @Test
     @WithMockUser(roles = "ADMIN")
