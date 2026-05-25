@@ -93,37 +93,5 @@ public class RoleController {
 
     }
 
-/*
-    @PostMapping
-    public ResponseEntity<RoleMinDTO> insert(@RequestBody RoleDTO dto) {
-
-        RoleMinDTO roleDTO = service.insert(dto);
-
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").
-                buildAndExpand(roleDTO.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(roleDTO);
-
-    }
-
-
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<RoleMinDTO> update(@PathVariable Long id, @RequestBody RoleDTO dto){
-
-        RoleMinDTO roleDTO = service.update(id, dto);
-
-        return ResponseEntity.ok(roleDTO);
-
-    }
-
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-
-        service.delete(id);
-
-        return ResponseEntity.noContent().build();
-
-    }
-    */
 
 }
