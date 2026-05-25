@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @DataJpaTest
 public class UserRepositoryTest {
@@ -25,7 +24,8 @@ public class UserRepositoryTest {
     private String nonExistingName;
 
     private User user;
-    private UserMinDTO userMin;
+
+    private List<User> users;
 
     private Long existingId;
     private Long nonExistingId;
@@ -42,8 +42,9 @@ public class UserRepositoryTest {
         existingName = "Marco Admin";
         nonExistingName = "nonExistingName";
 
-        user = UserFactory.createUser();
-        userMin = UserFactory.createUserMinDTO();
+        user  = repository.findById(existingId).get();
+        users = Arrays.asList(user);
+
 
     }
 
@@ -107,10 +108,10 @@ public class UserRepositoryTest {
     @Test
     public void shouldReturnUserWithRoles() {
 
-        //Set<UserMinDTO> u = repository.findUserWithRoles();
+        List<UserMinDTO> u = repository.findUserWithRoles(users);
 
-        //Assertions.assertNotNull(u);
-        //Assertions.assertEquals(existingName, u.stream().findFirst().get().getName());
+        Assertions.assertNotNull(u);
+        Assertions.assertEquals(existingName, u.stream().findFirst().get().getName());
 
     }
 
