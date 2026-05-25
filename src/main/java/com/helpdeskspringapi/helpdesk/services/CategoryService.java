@@ -45,7 +45,6 @@ public class CategoryService {
 
     public List<CategoryMinDTO> findAllWithTickets() {
 
-        List<Category> categories = categoryRepository.findAll();
 
         return categoryRepository.findAllWithTickets();
 
